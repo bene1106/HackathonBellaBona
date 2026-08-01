@@ -6,7 +6,10 @@ Paste a real job posting. Your phone rings: a full-screen incoming call from "{C
 
 ## 🎥 Demo video
 
-🎥 Demo video coming soon
+[![Watch the CallMeJob product demo](public/demo/callmejob-demo-cover.jpg)](public/demo/callmejob-launch-short.mp4)
+
+▶️ **[Watch the 56-second product demo](public/demo/callmejob-launch-short.mp4)**<br>
+🚀 **[Try the live demo](https://callmejob.vercel.app)**
 
 ## What it does
 

@@ -19,4 +19,4 @@ export type Feedback = {
   oneLineSummary: string;
 };
 
-export type Screen = "home" | "prep" | "incoming" | "live" | "feedback";
+export type Screen = "home" | "prep" | "incoming" | "live" | "feedback" | "video";

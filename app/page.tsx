@@ -8,6 +8,7 @@ import PrepScreen from "../components/PrepScreen";
 import IncomingCallScreen from "../components/IncomingCallScreen";
 import LiveCallScreen from "../components/LiveCallScreen";
 import FeedbackScreen from "../components/FeedbackScreen";
+import VideoCallScreen from "../components/VideoCallScreen";
 
 export default function Page() {
   const [screen, setScreen] = useState<Screen>("home");
@@ -75,7 +76,15 @@ export default function Page() {
           feedback={feedback}
           setFeedback={setFeedback}
           onCallAgain={callAgain}
+          onVideoRound={() => setScreen("video")}
           onNewJob={newJob}
+        />
+      )}
+      {screen === "video" && (
+        <VideoCallScreen
+          job={job}
+          difficulty={difficulty}
+          onEnded={() => setScreen("feedback")}
         />
       )}
     </main>

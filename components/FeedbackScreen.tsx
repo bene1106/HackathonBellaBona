@@ -63,6 +63,7 @@ export default function FeedbackScreen({
   feedback,
   setFeedback,
   onCallAgain,
+  onVideoRound,
   onNewJob,
 }: {
   job: Job;
@@ -70,6 +71,7 @@ export default function FeedbackScreen({
   feedback: Feedback | null;
   setFeedback: (f: Feedback) => void;
   onCallAgain: () => void;
+  onVideoRound: () => void;
   onNewJob: () => void;
 }) {
   const [error, setError] = useState(false);
@@ -116,6 +118,12 @@ export default function FeedbackScreen({
           className="w-full rounded-2xl bg-accept py-4 font-display text-lg font-semibold text-ink"
         >
           Call me again
+        </button>
+        <button
+          onClick={onVideoRound}
+          className="w-full rounded-2xl border border-accept/40 py-3.5 font-display text-base text-accept"
+        >
+          Round 2: Video interview
         </button>
         <button onClick={onNewJob} className="text-sm text-paper/60 underline">
           New job
@@ -194,6 +202,12 @@ export default function FeedbackScreen({
           className="w-full rounded-2xl bg-accept py-4 font-display text-lg font-semibold text-ink transition active:scale-[0.98]"
         >
           Call me again
+        </button>
+        <button
+          onClick={onVideoRound}
+          className="w-full rounded-2xl border border-accept/40 py-3.5 font-display text-base text-accept transition active:scale-[0.98]"
+        >
+          Round 2: Video interview
         </button>
         <button
           onClick={onNewJob}

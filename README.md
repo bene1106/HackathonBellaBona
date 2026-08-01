@@ -1,8 +1,8 @@
 # CallMeJob
 
-**The AI recruiter that calls you — and trains you for real job interviews.**
+**The AI recruiter that calls you and trains you for real job interviews.**
 
-Paste a real job posting. Your phone rings — a full-screen incoming call from "{Company} Recruiting". An AI recruiter runs a first-round phone screen tailored to that exact job, scores you, and calls again until you're ready.
+Paste a real job posting. Your phone rings: a full-screen incoming call from "{Company} Recruiting". An AI recruiter runs a first-round phone screen tailored to that exact job, scores you, and calls again until you're ready.
 
 ## 🎥 Demo video
 
@@ -10,11 +10,11 @@ Paste a real job posting. Your phone rings — a full-screen incoming call from 
 
 ## What it does
 
-- **Job-posting-tailored voice interviews** — a live ElevenLabs Conversational AI recruiter, briefed on the exact company, role, and requirements you pasted
-- **CV upload** — the recruiter probes what you actually claim, and feedback checks your answers against it
-- **Difficulty & duration selection** — pick how hard and how long each round should be; repeat rounds get sharper
-- **Scoring with actionable feedback** — an honest 0–100 score, a verdict, and concrete fixes quoting what you actually said
-- **Pitch mode** — practice your startup pitch against AI VC personas instead of recruiters
+- **Job-posting-tailored voice interviews**: a live ElevenLabs Conversational AI recruiter, briefed on the exact company, role, and requirements you pasted
+- **CV upload**: the recruiter probes what you actually claim, and feedback checks your answers against it
+- **Difficulty & duration selection**: pick how hard and how long each round should be; repeat rounds get sharper
+- **Scoring with actionable feedback**: an honest 0-100 score, a verdict, and concrete fixes quoting what you actually said
+- **Pitch mode**: practice your startup pitch against AI VC personas instead of recruiters
 
 ## Tech stack
 
@@ -47,7 +47,7 @@ npm run dev
 
 ## Live demo
 
-👉 [coldcall.vercel.app](https://coldcall.vercel.app)
+👉 [callmejob.vercel.app](https://callmejob.vercel.app)
 
 ---
 

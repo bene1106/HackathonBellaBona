@@ -6,6 +6,7 @@ import { RECRUITER_NAME, InterviewOptions } from "../lib/prompts";
 
 type SessionHandle = {
   stop: () => Promise<void>;
+  stopListening: () => string;
 };
 
 function formatTime(s: number) {
@@ -33,6 +34,12 @@ export default function VideoCallScreen({
   const [speaking, setSpeaking] = useState(false);
   const [isSandbox, setIsSandbox] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  // Noisy-room safety net: server-side turn detection can miss silence, so
+  // after 8s of "listening" with no new user transcript we offer a manual
+  // end-of-turn tap (session.stopListening()).
+  const [showDoneTap, setShowDoneTap] = useState(false);
+  const lastActivityRef = useRef(Date.now());
+  const speakingRef = useRef(false);
   const [pipOffset, setPipOffset] = useState({ x: 0, y: 0 });
   const dragRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
 
@@ -60,6 +67,24 @@ export default function VideoCallScreen({
     const id = setInterval(() => setSeconds((s) => s + 1), 1000);
     return () => clearInterval(id);
   }, [status]);
+
+  useEffect(() => {
+    if (status !== "live") return;
+    const id = setInterval(() => {
+      setShowDoneTap(
+        !speakingRef.current && Date.now() - lastActivityRef.current > 8000
+      );
+    }, 1000);
+    return () => clearInterval(id);
+  }, [status]);
+
+  const forceTurn = () => {
+    try {
+      sessionRef.current?.stopListening();
+    } catch {}
+    lastActivityRef.current = Date.now();
+    setShowDoneTap(false);
+  };
 
   const finish = () => {
     if (endedRef.current) return;
@@ -102,13 +127,22 @@ export default function VideoCallScreen({
           finish();
         });
         session.on(AgentEventsEnum.SESSION_STOPPED, () => finish());
-        session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => setSpeaking(true));
-        session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, () => setSpeaking(false));
+        session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => {
+          setSpeaking(true);
+          speakingRef.current = true;
+          lastActivityRef.current = Date.now();
+        });
+        session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, () => {
+          setSpeaking(false);
+          speakingRef.current = false;
+          lastActivityRef.current = Date.now();
+        });
         session.on(AgentEventsEnum.AVATAR_TRANSCRIPTION, (e: { text: string }) => {
           console.log("[coldcall] avatar said:", e.text);
         });
         session.on(AgentEventsEnum.USER_TRANSCRIPTION, (e: { text: string }) => {
           console.log("[coldcall] user said:", e.text);
+          lastActivityRef.current = Date.now();
         });
 
         await session.start();
@@ -217,6 +251,14 @@ export default function VideoCallScreen({
       </div>
 
       <div className="relative z-20 mt-auto flex flex-col items-center gap-3 pb-12">
+        {status === "live" && showDoneTap && !speaking && (
+          <button
+            onClick={forceTurn}
+            className="rounded-full border border-paper/25 bg-ink/70 px-4 py-2 text-sm text-paper/90 backdrop-blur transition active:scale-95"
+          >
+            Tap when you&apos;re done
+          </button>
+        )}
         {status === "live" && (
           <p className="rounded-lg bg-ink/70 px-3 py-1.5 text-xs text-paper/80 backdrop-blur" aria-live="polite">
             {speaking ? "Recruiter is speaking…" : "Listening to you…"}

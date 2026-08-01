@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useConversation } from "@elevenlabs/react";
+import { ConversationProvider, useConversation } from "@elevenlabs/react";
 import { Job, TranscriptEntry } from "../lib/types";
 import { buildRecruiterPrompt, buildFirstMessage, RECRUITER_NAME } from "../lib/prompts";
 
@@ -11,7 +11,19 @@ function formatTime(s: number) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
-export default function LiveCallScreen({
+export default function LiveCallScreen(props: {
+  job: Job;
+  difficulty: number;
+  onEnded: (transcript: TranscriptEntry[]) => void;
+}) {
+  return (
+    <ConversationProvider>
+      <LiveCall {...props} />
+    </ConversationProvider>
+  );
+}
+
+function LiveCall({
   job,
   difficulty,
   onEnded,

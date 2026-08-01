@@ -5,6 +5,7 @@ import { Screen, Job, TranscriptEntry, Feedback, InterviewPlan } from "../lib/ty
 import { FALLBACK_JOB } from "../lib/fallbackJob";
 import { InterviewOptions } from "../lib/prompts";
 import { buildFallbackPlan, isValidPlan } from "../lib/plan";
+import LandingScreen from "../components/LandingScreen";
 import HomeScreen, { SetupValues, DEFAULT_SETUP } from "../components/HomeScreen";
 import ResearchScreen from "../components/ResearchScreen";
 import PlanScreen from "../components/PlanScreen";
@@ -16,7 +17,7 @@ import VideoCallScreen from "../components/VideoCallScreen";
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export default function Page() {
-  const [screen, setScreen] = useState<Screen>("home");
+  const [screen, setScreen] = useState<Screen>("landing");
   const [setup, setSetup] = useState<SetupValues>(DEFAULT_SETUP);
   const [job, setJob] = useState<Job>(FALLBACK_JOB);
   const [plan, setPlan] = useState<InterviewPlan | null>(null);
@@ -124,8 +125,13 @@ export default function Page() {
 
   return (
     <main className="phone-frame">
+      {screen === "landing" && <LandingScreen onStart={() => setScreen("home")} />}
       {screen === "home" && (
-        <HomeScreen initial={setup} onSubmit={startResearch} />
+        <HomeScreen
+          initial={setup}
+          onSubmit={startResearch}
+          onBack={() => setScreen("landing")}
+        />
       )}
       {screen === "prep" && (
         <ResearchScreen step={researchStep} company={researchCompany} />

@@ -2,7 +2,9 @@
 
 **The AI recruiter that calls you and trains you for real job interviews.**
 
-Paste a real job posting. Your phone rings: a full-screen incoming call from "{Company} Recruiting". An AI recruiter runs a first-round phone screen tailored to that exact job, scores you, and calls again until you're ready.
+Ever left an interview thinking, *“If I had one more chance, I could do so much better”*?
+
+CallMeJob gives you that chance before the real interview. Paste a job posting, upload your CV, and take a tailored AI phone screen. Get scored, fix weak answers, and repeat until you're ready.
 
 ## 🎥 Demo video
 
@@ -11,13 +13,19 @@ Paste a real job posting. Your phone rings: a full-screen incoming call from "{C
 ▶️ **[Watch the latest product demo on YouTube](https://www.youtube.com/watch?v=jhPqx468PfE)**<br>
 🚀 **[Try the live demo](https://callmejob.vercel.app)**
 
-## What it does
+## Why CallMeJob
 
-- **Job-posting-tailored voice interviews**: a live ElevenLabs Conversational AI recruiter, briefed on the exact company, role, and requirements you pasted
-- **CV upload**: the recruiter probes what you actually claim, and feedback checks your answers against it
-- **Difficulty & duration selection**: pick how hard and how long each round should be; repeat rounds get sharper
-- **Scoring with actionable feedback**: an honest 0-100 score, a verdict, and concrete fixes quoting what you actually said
-- **Pitch mode**: practice your startup pitch against AI VC personas instead of recruiters
+- **Candidates practise more:** realistic, repeatable interviews tailored to the exact role and CV.
+- **Mentors repeat less:** AI handles the fundamentals so human sessions can focus on higher-value coaching.
+
+## How it works
+
+1. **Paste the job** and upload your CV.
+2. **Take the call** from an AI recruiter that probes, follows up, and interrupts.
+3. **Get actionable feedback:** a 0–100 score, readiness verdict, and fixes grounded in what you said.
+4. **Try again:** redo one question, take a harder round, continue to video, or book a human mentor.
+
+Also included: adjustable difficulty and duration, plus **Pitch Mode** for practising against AI VC personas.
 
 ## Tech stack
 
@@ -26,6 +34,7 @@ Paste a real job posting. Your phone rings: a full-screen incoming call from "{C
 - Tailwind CSS
 - ElevenLabs Conversational AI
 - OpenAI
+- HeyGen LiveAvatar
 
 ## Getting started
 

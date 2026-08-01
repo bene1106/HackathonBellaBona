@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
@@ -13,12 +13,38 @@ body {
 }
 
 body {
-  @apply bg-ink text-paper font-body antialiased;
+  @apply bg-bone text-ink font-body antialiased;
 }
 
 /* Phone frame: app is mobile-first, centered on larger screens */
 .phone-frame {
   @apply mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col;
+}
+
+/* Two worlds: calm light prep, dark pressure when the phone rings */
+.world-light {
+  @apply min-h-[100dvh] bg-bone text-ink;
+}
+
+.world-dark {
+  @apply min-h-[100dvh] bg-ink text-paper;
+  color-scheme: dark;
+}
+
+/* Elevated card shadow for the light world */
+.lift {
+  box-shadow:
+    0 1px 2px rgba(11, 16, 32, 0.04),
+    0 12px 32px -8px rgba(11, 16, 32, 0.1);
+}
+
+:focus-visible {
+  outline: 2px solid #147a46;
+  outline-offset: 2px;
+}
+
+.world-dark :focus-visible {
+  outline-color: #2fd672;
 }
 
 @keyframes ring-pulse {

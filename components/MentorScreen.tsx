@@ -27,7 +27,13 @@ const MENTORS = [
   },
 ];
 
-export default function MentorScreen({ onBack }: { onBack: () => void }) {
+export default function MentorScreen({
+  onBack,
+  backLabel = "Back to your results",
+}: {
+  onBack: () => void;
+  backLabel?: string;
+}) {
   const [selected, setSelected] = useState(0);
   const [joined, setJoined] = useState(false);
 

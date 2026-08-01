@@ -30,6 +30,7 @@ export default function Page() {
   const [researchStep, setResearchStep] = useState(0);
   const [researchCompany, setResearchCompany] = useState<string | null>(null);
   const [redoQuestion, setRedoQuestion] = useState<string | null>(null);
+  const [mentorFrom, setMentorFrom] = useState<Screen>("feedback");
 
   const startResearch = useCallback(async (values: SetupValues) => {
     setSetup(values);
@@ -125,9 +126,21 @@ export default function Page() {
     ? { ...options, plan: undefined, duration: 1, redoQuestion }
     : options;
 
+  const darkWorld =
+    screen === "incoming" || screen === "live" || screen === "video";
+
   return (
-    <main className="phone-frame">
-      {screen === "landing" && <LandingScreen onStart={() => setScreen("home")} />}
+    <div className={darkWorld ? "world-dark" : "world-light"}>
+      <main className="phone-frame">
+      {screen === "landing" && (
+        <LandingScreen
+          onStart={() => setScreen("home")}
+          onMentors={() => {
+            setMentorFrom("landing");
+            setScreen("mentor");
+          }}
+        />
+      )}
       {screen === "home" && (
         <HomeScreen
           initial={setup}
@@ -181,11 +194,19 @@ export default function Page() {
           onCallAgain={callAgain}
           onVideoRound={() => setScreen("video")}
           onNewJob={newJob}
-          onMentor={() => setScreen("mentor")}
+          onMentor={() => {
+            setMentorFrom("feedback");
+            setScreen("mentor");
+          }}
           onRedoQuestion={redoOneQuestion}
         />
       )}
-      {screen === "mentor" && <MentorScreen onBack={() => setScreen("feedback")} />}
+      {screen === "mentor" && (
+        <MentorScreen
+          backLabel={mentorFrom === "landing" ? "Back" : "Back to your results"}
+          onBack={() => setScreen(mentorFrom)}
+        />
+      )}
       {screen === "video" && (
         <VideoCallScreen
           job={job}
@@ -194,6 +215,7 @@ export default function Page() {
           onEnded={() => setScreen("feedback")}
         />
       )}
-    </main>
+      </main>
+    </div>
   );
 }

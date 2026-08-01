@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ConversationProvider, useConversation } from "@elevenlabs/react";
 import { Job, TranscriptEntry } from "../lib/types";
-import { buildRecruiterPrompt, buildFirstMessage, RECRUITER_NAME } from "../lib/prompts";
+import {
+  buildRecruiterPrompt,
+  buildFirstMessage,
+  RECRUITER_NAME,
+  InterviewOptions,
+} from "../lib/prompts";
 
 function formatTime(s: number) {
   const m = Math.floor(s / 60);
@@ -14,6 +19,7 @@ function formatTime(s: number) {
 export default function LiveCallScreen(props: {
   job: Job;
   difficulty: number;
+  options: InterviewOptions;
   onEnded: (transcript: TranscriptEntry[]) => void;
 }) {
   return (
@@ -26,10 +32,12 @@ export default function LiveCallScreen(props: {
 function LiveCall({
   job,
   difficulty,
+  options,
   onEnded,
 }: {
   job: Job;
   difficulty: number;
+  options: InterviewOptions;
   onEnded: (transcript: TranscriptEntry[]) => void;
 }) {
   const [seconds, setSeconds] = useState(0);
@@ -66,7 +74,7 @@ function LiveCall({
           connectionType: "websocket",
           overrides: {
             agent: {
-              prompt: { prompt: buildRecruiterPrompt(job, difficulty) },
+              prompt: { prompt: buildRecruiterPrompt(job, difficulty, options) },
               firstMessage: buildFirstMessage(job),
             },
           },
@@ -96,7 +104,7 @@ function LiveCall({
   const connected = conversation.status === "connected";
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-between pb-14 pt-20">
+    <div className="screen-in flex flex-1 flex-col items-center justify-between pb-14 pt-16">
       <div className="flex flex-col items-center">
         <h1 className="px-6 text-center font-display text-3xl font-semibold">
           {RECRUITER_NAME}
@@ -104,14 +112,14 @@ function LiveCall({
         <p className="mt-1 text-sm text-paper/50">
           {job.company} Recruiting
         </p>
-        <p className="mt-3 font-mono text-lg tabular-nums text-paper/80">
-          {connected ? formatTime(seconds) : "connecting…"}
+        <p className="mt-5 font-mono text-4xl font-light tabular-nums text-paper">
+          {connected ? formatTime(seconds) : "0:00"}
         </p>
       </div>
 
-      <div className="flex flex-col items-center gap-6">
+      <div className="flex flex-col items-center gap-7">
         <div
-          className={`flex h-36 w-36 items-center justify-center rounded-full border-2 ${
+          className={`flex h-36 w-36 items-center justify-center rounded-full border-2 transition-colors duration-300 ${
             speaking
               ? "speaking border-accept bg-accept/15 text-accept"
               : "border-paper/20 bg-paper/5 text-paper/60"
@@ -121,7 +129,14 @@ function LiveCall({
             <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-5 0-8 2.6-8 5.5V21a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-2.9-3-5.5-8-5.5Z" />
           </svg>
         </div>
-        <p className="text-sm text-paper/60" aria-live="polite">
+        <p className="flex items-center gap-2 text-sm text-paper/60" aria-live="polite">
+          {!error && connected && (
+            <span
+              className={`inline-block h-2 w-2 rounded-full ${
+                speaking ? "bg-accept" : "animate-pulse bg-paper/60"
+              }`}
+            />
+          )}
           {error
             ? error
             : !connected

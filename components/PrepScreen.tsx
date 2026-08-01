@@ -20,7 +20,7 @@ export default function PrepScreen() {
   }, []);
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-6">
+    <div className="screen-in flex flex-1 flex-col items-center justify-center px-6">
       <div className="relative flex h-20 w-20 items-center justify-center rounded-full text-accept ring-pulse">
         <svg
           viewBox="0 0 24 24"

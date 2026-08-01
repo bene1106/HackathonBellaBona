@@ -11,9 +11,17 @@ export type TranscriptEntry = {
   text: string;
 };
 
+export type CategoryScores = {
+  clarity: number;
+  structure: number;
+  confidence: number;
+  accuracy: number;
+};
+
 export type Feedback = {
   score: number;
   verdict: "NOT READY" | "ALMOST" | "READY";
+  categories: CategoryScores;
   strengths: string[];
   improvements: string[];
   oneLineSummary: string;

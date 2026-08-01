@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { Screen, Job, TranscriptEntry, Feedback } from "../lib/types";
 import { FALLBACK_JOB } from "../lib/fallbackJob";
+import { InterviewOptions } from "../lib/prompts";
 import HomeScreen from "../components/HomeScreen";
 import PrepScreen from "../components/PrepScreen";
 import IncomingCallScreen from "../components/IncomingCallScreen";
@@ -13,13 +14,15 @@ import VideoCallScreen from "../components/VideoCallScreen";
 export default function Page() {
   const [screen, setScreen] = useState<Screen>("home");
   const [job, setJob] = useState<Job>(FALLBACK_JOB);
+  const [options, setOptions] = useState<InterviewOptions>({});
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [difficulty, setDifficulty] = useState(1);
 
-  const startPrep = useCallback(async (input: string) => {
+  const startPrep = useCallback(async (input: string, cv: string, surprise: boolean) => {
     setScreen("prep");
     setDifficulty(1);
+    setOptions({ cv: cv || undefined, surprise });
     const minPrep = new Promise((r) => setTimeout(r, 3500));
     try {
       const res = await fetch("/api/parse-job", {
@@ -52,6 +55,7 @@ export default function Page() {
     setFeedback(null);
     setTranscript([]);
     setDifficulty(1);
+    setOptions({});
     setScreen("home");
   }, []);
 
@@ -67,12 +71,18 @@ export default function Page() {
         />
       )}
       {screen === "live" && (
-        <LiveCallScreen job={job} difficulty={difficulty} onEnded={handleCallEnded} />
+        <LiveCallScreen
+          job={job}
+          difficulty={difficulty}
+          options={options}
+          onEnded={handleCallEnded}
+        />
       )}
       {screen === "feedback" && (
         <FeedbackScreen
           job={job}
           transcript={transcript}
+          cv={options.cv}
           feedback={feedback}
           setFeedback={setFeedback}
           onCallAgain={callAgain}
@@ -84,6 +94,7 @@ export default function Page() {
         <VideoCallScreen
           job={job}
           difficulty={difficulty}
+          options={options}
           onEnded={() => setScreen("feedback")}
         />
       )}

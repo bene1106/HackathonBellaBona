@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Job } from "../lib/types";
-import { RECRUITER_NAME } from "../lib/prompts";
+import { RECRUITER_NAME, InterviewOptions } from "../lib/prompts";
 
 type SessionHandle = {
   stop: () => Promise<void>;
@@ -17,10 +17,12 @@ function formatTime(s: number) {
 export default function VideoCallScreen({
   job,
   difficulty,
+  options,
   onEnded,
 }: {
   job: Job;
   difficulty: number;
+  options: InterviewOptions;
   onEnded: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -53,7 +55,7 @@ export default function VideoCallScreen({
         const res = await fetch("/api/liveavatar/session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ job, difficulty }),
+          body: JSON.stringify({ job, difficulty, options }),
         });
         if (!res.ok) throw new Error();
         const { sessionToken, isSandbox: sandbox } = await res.json();

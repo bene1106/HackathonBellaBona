@@ -6,9 +6,9 @@ Paste a real job posting. Your phone rings — a full-screen incoming call from 
 
 Built solo in one session at **8x Mobile Hack Berlin**.
 
-| Home | Incoming call | Live interview | Feedback |
-| --- | --- | --- | --- |
-| ![Home](docs/home.jpg) | ![Incoming call](docs/incoming.jpg) | ![Live call](docs/live.jpg) | ![Feedback](docs/feedback.jpg) |
+| Home | Incoming call | Live interview | Feedback | Video round |
+| --- | --- | --- | --- | --- |
+| ![Home](docs/home.jpg) | ![Incoming call](docs/incoming.jpg) | ![Live call](docs/live.jpg) | ![Feedback](docs/feedback.jpg) | ![Video round](docs/video.jpg) |
 
 ## Why it's different
 
@@ -21,10 +21,13 @@ Interview prep tools live on your laptop — dashboards, Zoom bots, onboarding f
 3. **Get scored** — the live transcript goes to GPT, which returns an honest 0–100 score, a verdict (NOT READY / ALMOST / READY), 3 strengths, and 3 concrete fixes referencing your actual answers.
 4. **Call me again** — repeat rounds get harder until you hit READY (confetti included).
 
+Extras: paste your CV and the recruiter probes what you claim (and feedback checks your accuracy against it), toggle **surprise questions** for an unrehearsable curveball, see four category scores (clarity, structure, confidence, accuracy), and escalate to **Round 2: a live video interview** with a LiveAvatar-powered recruiter.
+
 ## Tech
 
 - Next.js 14 (App Router) + TypeScript + Tailwind
 - ElevenLabs Agents (`@elevenlabs/react`) for the live voice interview, with per-call system prompt + first message overrides
+- HeyGen LiveAvatar (`@heygen/liveavatar-web-sdk`, FULL mode) for the video interview round — sandbox mode by default, real avatars via `LIVEAVATAR_REAL=true`
 - OpenAI (gpt-4o-mini) for job parsing and interview scoring
 - No database, no auth — React state + sessionStorage only
 
@@ -42,6 +45,8 @@ npm run dev                  # binds 0.0.0.0 — open http://<laptop-ip>:3000 on
 OPENAI_API_KEY=sk-...
 NEXT_PUBLIC_ELEVENLABS_AGENT_ID=agent_...   # ElevenLabs agent with System prompt + First message overrides enabled
 NEXT_PUBLIC_PUBLIC_URL=https://...          # optional: public https URL, shown as a QR code on the feedback screen
+LIVEAVATAR_API_KEY=...                      # optional: enables the Round 2 video interview (sandbox mode)
+LIVEAVATAR_REAL=false                       # set true + LIVEAVATAR_AVATAR_ID / LIVEAVATAR_VOICE_ID for real avatars
 ```
 
 The mic requires a secure context on iOS — for phone demos tunnel the dev server (`npx localtunnel --port 3000`) and open the https URL.

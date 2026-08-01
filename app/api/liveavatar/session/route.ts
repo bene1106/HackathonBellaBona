@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Job } from "../../../../lib/types";
-import { buildRecruiterPrompt, buildFirstMessage } from "../../../../lib/prompts";
+import {
+  buildRecruiterPrompt,
+  buildFirstMessage,
+  InterviewOptions,
+} from "../../../../lib/prompts";
 
 export const maxDuration = 30;
 
@@ -14,7 +18,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { job, difficulty } = (await req.json()) as { job: Job; difficulty: number };
+    const { job, difficulty, options } = (await req.json()) as {
+      job: Job;
+      difficulty: number;
+      options?: InterviewOptions;
+    };
     const realMode = process.env.LIVEAVATAR_REAL === "true" || process.env.LIVEAVATAR_REAL === "1";
     const headers = { "X-API-KEY": apiKey, "content-type": "application/json" };
 
@@ -23,7 +31,7 @@ export async function POST(req: NextRequest) {
       headers,
       body: JSON.stringify({
         name: `coldcall-${job.company}-r${difficulty}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`.slice(0, 60),
-        prompt: `${buildRecruiterPrompt(job, difficulty)} This round is a video interview, so the candidate can see you.`,
+        prompt: `${buildRecruiterPrompt(job, difficulty, options)} This round is a video interview, so the candidate can see you.`,
         opening_text: buildFirstMessage(job),
       }),
     });

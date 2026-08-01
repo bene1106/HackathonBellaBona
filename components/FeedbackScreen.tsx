@@ -30,8 +30,7 @@ function ScoreRing({ score }: { score: number }) {
 
   const r = 64;
   const c = 2 * Math.PI * r;
-  const good = score >= 80;
-  const color = good ? "#2FD672" : score >= 60 ? "#F5F3EE" : "#FF4B4B";
+  const color = score >= 80 ? "#2FD672" : score >= 60 ? "#F5F3EE" : "#FF4B4B";
 
   return (
     <div className="relative h-44 w-44">
@@ -57,9 +56,41 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
+function CategoryBars({ feedback }: { feedback: Feedback }) {
+  const entries: [string, number][] = [
+    ["Clarity", feedback.categories.clarity],
+    ["Structure", feedback.categories.structure],
+    ["Confidence", feedback.categories.confidence],
+    ["Accuracy", feedback.categories.accuracy],
+  ];
+  return (
+    <div className="grid grid-cols-2 gap-x-5 gap-y-3">
+      {entries.map(([label, value], i) => (
+        <div key={label}>
+          <div className="flex items-baseline justify-between">
+            <span className="text-xs text-paper/60">{label}</span>
+            <span className="text-xs tabular-nums text-paper/80">{value}</span>
+          </div>
+          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-paper/10">
+            <div
+              className="h-full origin-left rounded-full"
+              style={{
+                width: `${value}%`,
+                backgroundColor: value >= 80 ? "#2FD672" : value >= 60 ? "#F5F3EE" : "#FF4B4B",
+                animation: `bar-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${0.9 + i * 0.12}s both`,
+              }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function FeedbackScreen({
   job,
   transcript,
+  cv,
   feedback,
   setFeedback,
   onCallAgain,
@@ -68,6 +99,7 @@ export default function FeedbackScreen({
 }: {
   job: Job;
   transcript: TranscriptEntry[];
+  cv?: string;
   feedback: Feedback | null;
   setFeedback: (f: Feedback) => void;
   onCallAgain: () => void;
@@ -85,7 +117,7 @@ export default function FeedbackScreen({
         const res = await fetch("/api/feedback", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ job, transcript }),
+          body: JSON.stringify({ job, transcript, cv }),
         });
         if (!res.ok) throw new Error();
         setFeedback((await res.json()) as Feedback);
@@ -93,7 +125,7 @@ export default function FeedbackScreen({
         setError(true);
       }
     })();
-  }, [feedback, job, transcript, setFeedback]);
+  }, [feedback, job, transcript, cv, setFeedback]);
 
   useEffect(() => {
     if (!feedback || feedback.verdict !== "READY") return;
@@ -107,7 +139,7 @@ export default function FeedbackScreen({
 
   if (error) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-8 text-center">
+      <div className="screen-in flex flex-1 flex-col items-center justify-center gap-5 px-8 text-center">
         <p className="font-display text-2xl">Couldn&apos;t score that call.</p>
         <p className="text-sm text-paper/60">
           The call may have been too short to grade. Take the call again and answer at
@@ -149,7 +181,7 @@ export default function FeedbackScreen({
         : "bg-decline/15 text-decline border-decline/40";
 
   return (
-    <div className="flex flex-1 flex-col px-6 pb-10 pt-12">
+    <div className="screen-in flex flex-1 flex-col px-6 pb-10 pt-12">
       <div className="flex flex-col items-center">
         <p className="text-xs uppercase tracking-[0.25em] text-paper/50">
           {job.role} · {job.company}
@@ -158,7 +190,7 @@ export default function FeedbackScreen({
           <ScoreRing score={feedback.score} />
         </div>
         <span
-          className={`mt-5 rounded-full border px-4 py-1.5 font-display text-sm font-semibold tracking-wide ${verdictStyle}`}
+          className={`badge-pop mt-5 rounded-full border px-4 py-1.5 font-display text-sm font-semibold tracking-wide ${verdictStyle}`}
         >
           {feedback.verdict}
         </span>
@@ -167,8 +199,12 @@ export default function FeedbackScreen({
         </p>
       </div>
 
-      <div className="mt-8 space-y-6">
-        <section>
+      <div className="mt-8 space-y-4">
+        <div className="rounded-2xl bg-paper/5 p-4">
+          <CategoryBars feedback={feedback} />
+        </div>
+
+        <section className="rounded-2xl bg-paper/5 p-4">
           <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-accept">
             What worked
           </h2>
@@ -181,7 +217,8 @@ export default function FeedbackScreen({
             ))}
           </ul>
         </section>
-        <section>
+
+        <section className="rounded-2xl bg-paper/5 p-4">
           <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-paper/60">
             Fix before the next call
           </h2>

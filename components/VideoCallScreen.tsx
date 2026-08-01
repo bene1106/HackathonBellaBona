@@ -26,12 +26,34 @@ export default function VideoCallScreen({
   onEnded: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const selfViewRef = useRef<HTMLVideoElement | null>(null);
   const sessionRef = useRef<SessionHandle | null>(null);
   const endedRef = useRef(false);
   const [status, setStatus] = useState<"connecting" | "live" | "error">("connecting");
   const [speaking, setSpeaking] = useState(false);
   const [isSandbox, setIsSandbox] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [pipOffset, setPipOffset] = useState({ x: 0, y: 0 });
+  const dragRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
+
+  // Local self-view preview only; the stream is never sent anywhere.
+  useEffect(() => {
+    let stream: MediaStream | null = null;
+    (async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user", width: 480 },
+          audio: false,
+        });
+        if (selfViewRef.current) selfViewRef.current.srcObject = stream;
+      } catch {
+        // no camera permission: just skip the self-view
+      }
+    })();
+    return () => {
+      stream?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
 
   useEffect(() => {
     if (status !== "live") return;
@@ -82,6 +104,12 @@ export default function VideoCallScreen({
         session.on(AgentEventsEnum.SESSION_STOPPED, () => finish());
         session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => setSpeaking(true));
         session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, () => setSpeaking(false));
+        session.on(AgentEventsEnum.AVATAR_TRANSCRIPTION, (e: { text: string }) => {
+          console.log("[coldcall] avatar said:", e.text);
+        });
+        session.on(AgentEventsEnum.USER_TRANSCRIPTION, (e: { text: string }) => {
+          console.log("[coldcall] user said:", e.text);
+        });
 
         await session.start();
         console.log("[coldcall] liveavatar start() resolved, state:", session.state);
@@ -137,6 +165,35 @@ export default function VideoCallScreen({
           )}
         </div>
       )}
+
+      {/* FaceTime-style self view: local preview only */}
+      <video
+        ref={selfViewRef}
+        autoPlay
+        playsInline
+        muted
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          dragRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            baseX: pipOffset.x,
+            baseY: pipOffset.y,
+          };
+        }}
+        onPointerMove={(e) => {
+          if (!dragRef.current) return;
+          setPipOffset({
+            x: dragRef.current.baseX + e.clientX - dragRef.current.startX,
+            y: dragRef.current.baseY + e.clientY - dragRef.current.startY,
+          });
+        }}
+        onPointerUp={() => {
+          dragRef.current = null;
+        }}
+        style={{ transform: `translate(${pipOffset.x}px, ${pipOffset.y}px) scaleX(-1)` }}
+        className="absolute right-4 top-24 z-30 h-[140px] w-[100px] cursor-grab touch-none rounded-2xl border border-paper/20 bg-ink/60 object-cover shadow-lg active:cursor-grabbing"
+      />
 
       <div className="relative z-20 flex items-start justify-between p-5 pt-8">
         <div className="rounded-xl bg-ink/70 px-3 py-2 backdrop-blur">

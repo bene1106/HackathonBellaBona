@@ -49,22 +49,30 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content:
-            'Extract the job posting into JSON with exactly these keys: company (string), role (string), seniority (string), top5Requirements (array of 5 short strings, most important first), cultureHints (one short string). If the text is not a job posting or key info is missing, infer sensibly. Return ONLY JSON.',
+            'Extract the job posting into JSON with exactly these keys: company (string), role (string), seniority (string), top5Requirements (array of 5 short strings, most important first), cultureHints (one short string). Infer missing details sensibly from context (product names, domain, tone). NEVER output placeholder values like "Unknown", "Not specified", or "N/A" — if the company is truly unnamed, use null for that field. If the text is not a job posting at all, return {"notAJob": true}. Return ONLY JSON.',
         },
         { role: "user", content: text.slice(0, 12000) },
       ],
     });
 
     const parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
-    if (!parsed.company || !parsed.role || !Array.isArray(parsed.top5Requirements)) {
+    const isPlaceholder = (s: unknown) =>
+      !s || /^(unknown|not specified|unspecified|n\/?a|none|null)$/i.test(String(s).trim());
+
+    const requirements = (Array.isArray(parsed.top5Requirements) ? parsed.top5Requirements : [])
+      .map(String)
+      .filter((r: string) => !isPlaceholder(r))
+      .slice(0, 5);
+
+    if (parsed.notAJob || isPlaceholder(parsed.role) || requirements.length < 2) {
       return NextResponse.json(FALLBACK_JOB);
     }
     return NextResponse.json({
-      company: String(parsed.company),
+      company: isPlaceholder(parsed.company) ? "Confidential" : String(parsed.company),
       role: String(parsed.role),
-      seniority: String(parsed.seniority ?? "Mid-level"),
-      top5Requirements: parsed.top5Requirements.slice(0, 5).map(String),
-      cultureHints: String(parsed.cultureHints ?? ""),
+      seniority: isPlaceholder(parsed.seniority) ? "Mid-level" : String(parsed.seniority),
+      top5Requirements: requirements,
+      cultureHints: isPlaceholder(parsed.cultureHints) ? "" : String(parsed.cultureHints),
     });
   } catch {
     return NextResponse.json(FALLBACK_JOB);

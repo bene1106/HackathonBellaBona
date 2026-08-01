@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { Screen, Job, TranscriptEntry, Feedback } from "../lib/types";
 import { FALLBACK_JOB } from "../lib/fallbackJob";
-import { InterviewOptions } from "../lib/prompts";
+import { InterviewOptions, DifficultyLevel } from "../lib/prompts";
 import HomeScreen from "../components/HomeScreen";
 import PrepScreen from "../components/PrepScreen";
 import IncomingCallScreen from "../components/IncomingCallScreen";
@@ -19,10 +19,11 @@ export default function Page() {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [difficulty, setDifficulty] = useState(1);
 
-  const startPrep = useCallback(async (input: string, cv: string, surprise: boolean) => {
+  const startPrep = useCallback(
+    async (input: string, cv: string, surprise: boolean, level: DifficultyLevel) => {
     setScreen("prep");
     setDifficulty(1);
-    setOptions({ cv: cv || undefined, surprise });
+    setOptions({ cv: cv || undefined, surprise, level });
     const minPrep = new Promise((r) => setTimeout(r, 3500));
     try {
       const res = await fetch("/api/parse-job", {
@@ -38,7 +39,9 @@ export default function Page() {
     }
     await minPrep;
     setScreen("incoming");
-  }, []);
+    },
+    []
+  );
 
   const handleCallEnded = useCallback((entries: TranscriptEntry[]) => {
     setTranscript(entries);

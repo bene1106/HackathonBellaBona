@@ -258,7 +258,7 @@ export default function FeedbackScreen({
               <QRCodeSVG value={PUBLIC_URL} size={56} bgColor="#F5F3EE" fgColor="#0B1020" />
             </div>
             <p className="max-w-[18ch] text-xs leading-snug text-paper/50">
-              Try it on your own phone — scan to get the call.
+              Try it on your own phone. Scan to get the call.
             </p>
           </div>
         )}

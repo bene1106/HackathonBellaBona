@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       method: "POST",
       headers,
       body: JSON.stringify({
-        name: `coldcall-${job.company}-r${difficulty}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`.slice(0, 60),
+        name: `callmejob-${job.company}-r${difficulty}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`.slice(0, 60),
         prompt: `${buildRecruiterPrompt(job, difficulty, options)} This round is a video interview, so the candidate can see you.`,
         opening_text: buildFirstMessage(job),
       }),

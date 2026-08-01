@@ -58,7 +58,7 @@ export default function Page() {
         body: JSON.stringify({ input: values.input, mode: values.mode }),
       });
       parsedJob = (await res.json()) as Job;
-      sessionStorage.setItem("coldcall.job", JSON.stringify(parsedJob));
+      sessionStorage.setItem("callmejob.job", JSON.stringify(parsedJob));
     } catch {
       parsedJob = FALLBACK_JOB;
     }

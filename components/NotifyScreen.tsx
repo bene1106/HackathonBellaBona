@@ -64,7 +64,7 @@ export default function NotifyScreen({
         <div className="card-drop" style={{ animationDelay: "0.3s" }}>
           <NotificationCard
             avatar={<PhoneAvatar />}
-            title="ColdCall"
+            title="CallMeJob"
             body={`${caller} tried to call you. Tap to call back.`}
             meta="now"
           />
@@ -72,7 +72,7 @@ export default function NotifyScreen({
         <div className="card-drop" style={{ animationDelay: "0.8s" }}>
           <NotificationCard
             avatar={<PhoneAvatar />}
-            title="ColdCall"
+            title="CallMeJob"
             body={
               mode === "pitch"
                 ? "You are 12 points from FUNDABLE. Next call is coming."

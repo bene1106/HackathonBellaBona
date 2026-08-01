@@ -115,15 +115,15 @@ export default function VideoCallScreen({
         sessionRef.current = session;
 
         session.on(SessionEvent.SESSION_STATE_CHANGED, (s: string) => {
-          console.log("[coldcall] liveavatar state:", s);
+          console.log("[callmejob] liveavatar state:", s);
         });
         session.on(SessionEvent.SESSION_STREAM_READY, () => {
-          console.log("[coldcall] liveavatar stream ready");
+          console.log("[callmejob] liveavatar stream ready");
           if (videoRef.current) session.attach(videoRef.current);
           setStatus("live");
         });
         session.on(SessionEvent.SESSION_DISCONNECTED, (reason: string) => {
-          console.log("[coldcall] liveavatar disconnected:", reason);
+          console.log("[callmejob] liveavatar disconnected:", reason);
           finish();
         });
         session.on(AgentEventsEnum.SESSION_STOPPED, () => finish());
@@ -138,17 +138,17 @@ export default function VideoCallScreen({
           lastActivityRef.current = Date.now();
         });
         session.on(AgentEventsEnum.AVATAR_TRANSCRIPTION, (e: { text: string }) => {
-          console.log("[coldcall] avatar said:", e.text);
+          console.log("[callmejob] avatar said:", e.text);
         });
         session.on(AgentEventsEnum.USER_TRANSCRIPTION, (e: { text: string }) => {
-          console.log("[coldcall] user said:", e.text);
+          console.log("[callmejob] user said:", e.text);
           lastActivityRef.current = Date.now();
         });
 
         await session.start();
-        console.log("[coldcall] liveavatar start() resolved, state:", session.state);
+        console.log("[callmejob] liveavatar start() resolved, state:", session.state);
       } catch (e) {
-        console.error("[coldcall] liveavatar start failed:", e);
+        console.error("[callmejob] liveavatar start failed:", e);
         setStatus("error");
       }
     })();

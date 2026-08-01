@@ -165,7 +165,7 @@ export default function HomeScreen({
         setCvFileSize(file.size);
       }
     } catch (e) {
-      console.error("[coldcall] pdf extraction failed:", e);
+      console.error("[callmejob] pdf extraction failed:", e);
       setCvFileName(null);
       setCvFileSize(null);
     }

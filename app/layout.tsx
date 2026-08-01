@@ -13,7 +13,7 @@ const body = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ColdCall: the recruiter that calls until you're ready",
+  title: "CallMeJob: the recruiter that calls until you're ready",
   description:
     "Paste a job posting. Your phone rings. An AI recruiter interviews you, scores you, and calls again until you're interview-ready.",
 };

@@ -1,56 +1,54 @@
-# ColdCall
+# CallMeJob
 
-**The recruiter that calls until you're ready.**
+**The AI recruiter that calls you — and trains you for real job interviews.**
 
-Paste a real job posting. Your phone rings — a full-screen incoming call from "{Company} Recruiting". An AI recruiter runs a real first-round phone screen tailored to that exact job, then scores you 0–100 with specific fixes quoting what you actually said. Tap "Call me again" and it calls back with sharper questions — until you're ready.
+Paste a real job posting. Your phone rings — a full-screen incoming call from "{Company} Recruiting". An AI recruiter runs a first-round phone screen tailored to that exact job, scores you, and calls again until you're ready.
 
-Built solo in one session at **8x Mobile Hack Berlin**.
+## 🎥 Demo video
 
-| Home | Incoming call | Live interview | Feedback | Video round |
-| --- | --- | --- | --- | --- |
-| ![Home](docs/home.jpg) | ![Incoming call](docs/incoming.jpg) | ![Live call](docs/live.jpg) | ![Feedback](docs/feedback.jpg) | ![Video round](docs/video.jpg) |
+🎥 Demo video coming soon
 
-## Why it's different
+## What it does
 
-Interview prep tools live on your laptop — dashboards, Zoom bots, onboarding flows. Interviews happen on your phone. ColdCall has zero setup (no login, no account) and flips the interaction: **the app calls you**. Real ringtone, real vibration, real pressure.
+- **Job-posting-tailored voice interviews** — a live ElevenLabs Conversational AI recruiter, briefed on the exact company, role, and requirements you pasted
+- **CV upload** — the recruiter probes what you actually claim, and feedback checks your answers against it
+- **Difficulty & duration selection** — pick how hard and how long each round should be; repeat rounds get sharper
+- **Scoring with actionable feedback** — an honest 0–100 score, a verdict, and concrete fixes quoting what you actually said
+- **Pitch mode** — practice your startup pitch against AI VC personas instead of recruiters
 
-## How it works
+## Tech stack
 
-1. **Paste** a job posting link or text → GPT extracts company, role, seniority, and top requirements (falls back to a demo job if parsing fails).
-2. **Answer the call** — an ElevenLabs conversational agent, briefed via runtime overrides with a recruiter persona for that exact job, asks 4 tailored questions.
-3. **Get scored** — the live transcript goes to GPT, which returns an honest 0–100 score, a verdict (NOT READY / ALMOST / READY), 3 strengths, and 3 concrete fixes referencing your actual answers.
-4. **Call me again** — repeat rounds get harder until you hit READY (confetti included).
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- ElevenLabs Conversational AI
+- OpenAI
 
-Extras: paste your CV and the recruiter probes what you claim (and feedback checks your accuracy against it), toggle **surprise questions** for an unrehearsable curveball, see four category scores (clarity, structure, confidence, accuracy), and escalate to **Round 2: a live video interview** with a LiveAvatar-powered recruiter.
-
-## Tech
-
-- Next.js 14 (App Router) + TypeScript + Tailwind
-- ElevenLabs Agents (`@elevenlabs/react`) for the live voice interview, with per-call system prompt + first message overrides
-- HeyGen LiveAvatar (`@heygen/liveavatar-web-sdk`, FULL mode) for the video interview round — sandbox mode by default, real avatars via `LIVEAVATAR_REAL=true`
-- OpenAI (gpt-4o-mini) for job parsing and interview scoring
-- No database, no auth — React state + sessionStorage only
-
-## Run it
+## Getting started
 
 ```bash
+git clone https://github.com/bene1106/CallMeJob.git
+cd CallMeJob
 npm install
-cp .env.example .env.local   # fill in your keys
-npm run dev                  # binds 0.0.0.0 — open http://<laptop-ip>:3000 on your phone
 ```
 
-`.env.local`:
+Create `.env.local` with:
 
 ```
 OPENAI_API_KEY=sk-...
-NEXT_PUBLIC_ELEVENLABS_AGENT_ID=agent_...   # ElevenLabs agent with System prompt + First message overrides enabled
-NEXT_PUBLIC_PUBLIC_URL=https://...          # optional: public https URL, shown as a QR code on the feedback screen
-LIVEAVATAR_API_KEY=...                      # optional: enables the Round 2 video interview (sandbox mode)
-LIVEAVATAR_REAL=false                       # set true + LIVEAVATAR_AVATAR_ID / LIVEAVATAR_VOICE_ID for real avatars
+NEXT_PUBLIC_ELEVENLABS_AGENT_ID=agent_...
 ```
 
-The mic requires a secure context on iOS — for phone demos tunnel the dev server (`npx localtunnel --port 3000`) and open the https URL.
+Then run the dev server:
 
-## The ElevenLabs agent
+```bash
+npm run dev
+```
 
-Create an agent in the ElevenLabs dashboard and enable **Security → Overrides** for **System prompt** and **First message** — the app injects the job-specific recruiter briefing at session start, so the dashboard prompt itself can stay empty.
+## Live demo
+
+👉 [coldcall.vercel.app](https://coldcall.vercel.app)
+
+---
+
+Built at **8x × Bella&Bona Mobile Hack Berlin, August 2026**.

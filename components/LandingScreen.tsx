@@ -57,7 +57,7 @@ export default function LandingScreen({
       {/* Hero */}
       <div className="flex items-center gap-2">
         <span className="h-2 w-2 rounded-full bg-accept" />
-        <Eyebrow>ColdCall</Eyebrow>
+        <Eyebrow>CallMeJob</Eyebrow>
       </div>
 
       <h1 className="mt-8 font-display text-[2.7rem] font-bold leading-[1.06]">
@@ -66,7 +66,7 @@ export default function LandingScreen({
         about to ring.
       </h1>
       <p className="mt-4 max-w-[36ch] text-[15px] leading-relaxed text-mute">
-        Interview nerves come from never facing real pressure. ColdCall is a
+        Interview nerves come from never facing real pressure. CallMeJob is a
         recruiter who calls you, grills you on the actual job, and scores every
         answer.
       </p>
@@ -132,7 +132,7 @@ export default function LandingScreen({
         </h2>
         <p className="mt-3 max-w-[38ch] text-[15px] leading-relaxed text-mute">
           A human mock interview costs real money and you get exactly one shot.
-          ColdCall calls you again and again, scoring every round, until the
+          CallMeJob calls you again and again, scoring every round, until the
           verdict says READY.
         </p>
         <div className="lift mt-5 space-y-4 rounded-[20px] border border-line bg-card p-5">
@@ -160,7 +160,7 @@ export default function LandingScreen({
       <section className="mt-14 rounded-[20px] border border-line bg-ink/[0.03] p-5">
         <Eyebrow>For mentors</Eyebrow>
         <p className="mt-3 text-[15px] leading-relaxed text-ink">
-          Stop teaching lesson one. ColdCall sends you candidates who are
+          Stop teaching lesson one. CallMeJob sends you candidates who are
           already READY, so your paid hour is the final exam.
         </p>
         <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { Job, InterviewPlan } from "../lib/types";
+import { Job, InterviewPlan, Mode } from "../lib/types";
 import { DifficultyLevel, DurationMinutes } from "../lib/prompts";
 import NotificationCard from "./NotificationCard";
 
@@ -19,6 +19,7 @@ export default function PlanScreen({
   plan,
   level,
   duration,
+  mode = "job",
   onStart,
   onAdjust,
 }: {
@@ -26,26 +27,33 @@ export default function PlanScreen({
   plan: InterviewPlan;
   level: DifficultyLevel;
   duration: DurationMinutes;
+  mode?: Mode;
   onStart: () => void;
   onAdjust: () => void;
 }) {
+  const pitch = mode === "pitch";
   return (
     <div className="screen-in flex flex-1 flex-col px-6 pb-8 pt-12">
       <div>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mute/80">
-          Your interview plan
+          {pitch ? "Your pitch plan" : "Your interview plan"}
         </p>
         <h1 className="mt-2 font-display text-3xl font-bold leading-tight">
-          {job.role}
+          {pitch ? job.company : job.role}
         </h1>
         <p className="mt-1 text-sm text-mute">
-          {job.company} · {LEVEL_LABEL[level]} · {durationLabel(duration)} ·{" "}
-          {plan.plannedQuestions.length}{" "}
+          {pitch ? job.seniority : job.company} · {LEVEL_LABEL[level]} ·{" "}
+          {durationLabel(duration)} · {plan.plannedQuestions.length}{" "}
           {plan.plannedQuestions.length === 1 ? "question" : "questions"}
         </p>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-2">
+      {pitch && (
+        <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-mute/80">
+          What the VC will probe
+        </p>
+      )}
+      <div className={`${pitch ? "mt-2" : "mt-6"} flex flex-wrap gap-2`}>
         {plan.focusAreas.map((area) => (
           <span
             key={area}

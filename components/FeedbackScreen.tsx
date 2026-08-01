@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { QRCodeSVG } from "qrcode.react";
-import { Job, TranscriptEntry, Feedback } from "../lib/types";
+import { Job, TranscriptEntry, Feedback, Mode } from "../lib/types";
 import NotificationCard from "./NotificationCard";
 
 // Weakest = recruiter questions whose combined candidate answer was thinnest.
@@ -101,13 +101,20 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-function CategoryBars({ feedback }: { feedback: Feedback }) {
-  const entries: [string, number][] = [
-    ["Clarity", feedback.categories.clarity],
-    ["Structure", feedback.categories.structure],
-    ["Confidence", feedback.categories.confidence],
-    ["Accuracy", feedback.categories.accuracy],
-  ];
+function CategoryBars({ feedback, pitch }: { feedback: Feedback; pitch: boolean }) {
+  const entries: [string, number][] = pitch
+    ? [
+        ["Clarity", feedback.categories.clarity],
+        ["Traction", feedback.categories.structure],
+        ["Market", feedback.categories.confidence],
+        ["Conviction", feedback.categories.accuracy],
+      ]
+    : [
+        ["Clarity", feedback.categories.clarity],
+        ["Structure", feedback.categories.structure],
+        ["Confidence", feedback.categories.confidence],
+        ["Accuracy", feedback.categories.accuracy],
+      ];
   return (
     <div className="grid grid-cols-2 gap-x-5 gap-y-3">
       {entries.map(([label, value], i) => (
@@ -138,6 +145,7 @@ export default function FeedbackScreen({
   cv,
   feedback,
   setFeedback,
+  mode = "job",
   onCallAgain,
   onVideoRound,
   onNewJob,
@@ -149,12 +157,14 @@ export default function FeedbackScreen({
   cv?: string;
   feedback: Feedback | null;
   setFeedback: (f: Feedback) => void;
+  mode?: Mode;
   onCallAgain: () => void;
   onVideoRound: () => void;
   onNewJob: () => void;
   onMentor: () => void;
   onRedoQuestion: (question: string) => void;
 }) {
+  const pitch = mode === "pitch";
   const [error, setError] = useState(false);
   const fetchedRef = useRef(false);
 
@@ -166,7 +176,7 @@ export default function FeedbackScreen({
         const res = await fetch("/api/feedback", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ job, transcript, cv }),
+          body: JSON.stringify({ job, transcript, cv, mode }),
         });
         if (!res.ok) throw new Error();
         setFeedback((await res.json()) as Feedback);
@@ -234,7 +244,7 @@ export default function FeedbackScreen({
     <div className="screen-in flex flex-1 flex-col px-6 pb-10 pt-12">
       <div className="flex flex-col items-center">
         <p className="text-xs uppercase tracking-[0.25em] text-mute">
-          {job.role} · {job.company}
+          {pitch ? `${job.company} · pitch call` : `${job.role} · ${job.company}`}
         </p>
         <div className="mt-6">
           <ScoreRing score={feedback.score} />
@@ -242,7 +252,7 @@ export default function FeedbackScreen({
         <span
           className={`badge-pop mt-5 rounded-full border px-4 py-1.5 font-display text-sm font-semibold tracking-wide ${verdictStyle}`}
         >
-          {feedback.verdict}
+          {pitch && feedback.verdict === "READY" ? "FUNDABLE" : feedback.verdict}
         </span>
         <p className="mt-4 max-w-[38ch] text-center text-sm leading-relaxed text-mute">
           {feedback.oneLineSummary}
@@ -251,7 +261,7 @@ export default function FeedbackScreen({
 
       <div className="mt-8 space-y-4">
         <div className="lift rounded-[20px] border border-line bg-card p-4">
-          <CategoryBars feedback={feedback} />
+          <CategoryBars feedback={feedback} pitch={pitch} />
         </div>
 
         <section className="lift rounded-[20px] border border-line bg-card p-4">
@@ -326,7 +336,9 @@ export default function FeedbackScreen({
               Ready is just the start.
             </span>
             <span className="mt-1 block text-sm text-mute">
-              Talk to someone who got this exact job.
+              {pitch
+                ? "Talk to a founder who raised."
+                : "Talk to someone who got this exact job."}
             </span>
             <span className="mt-2 block text-sm font-semibold text-deep">
               Meet your mentor
@@ -356,7 +368,7 @@ export default function FeedbackScreen({
             onClick={onMentor}
             className="w-full text-center text-sm text-mute"
           >
-            Talk to someone who got this job
+            {pitch ? "Talk to a founder who raised" : "Talk to someone who got this job"}
           </button>
         )}
         <ShareQR />

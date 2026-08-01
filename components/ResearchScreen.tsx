@@ -1,17 +1,28 @@
 "use client";
 
+import { Mode } from "../lib/types";
+
 export default function ResearchScreen({
   step,
   company,
+  mode = "job",
 }: {
   step: number;
   company: string | null;
+  mode?: Mode;
 }) {
-  const steps = [
-    "Reading the job posting",
-    company ? `Extracting what ${company} really wants` : "Extracting what they really want",
-    "Designing your interview plan",
-  ];
+  const steps =
+    mode === "pitch"
+      ? [
+          "Reading your pitch",
+          company ? `Finding the hard questions for ${company}` : "Finding the hard questions",
+          "Designing your pitch plan",
+        ]
+      : [
+          "Reading the job posting",
+          company ? `Extracting what ${company} really wants` : "Extracting what they really want",
+          "Designing your interview plan",
+        ];
 
   return (
     <div className="screen-in flex flex-1 flex-col justify-center px-8">

@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { Screen, Job, TranscriptEntry, Feedback, InterviewPlan } from "../lib/types";
 import { FALLBACK_JOB } from "../lib/fallbackJob";
-import { InterviewOptions } from "../lib/prompts";
+import { InterviewOptions, fundNameFor } from "../lib/prompts";
 import { buildFallbackPlan, isValidPlan } from "../lib/plan";
 import LandingScreen from "../components/LandingScreen";
 import HomeScreen, { SetupValues, DEFAULT_SETUP } from "../components/HomeScreen";
@@ -45,6 +45,7 @@ export default function Page() {
       surprise: values.surprise,
       level: values.level,
       duration: values.duration,
+      mode: values.mode,
     };
     setOptions(baseOptions);
 
@@ -54,12 +55,17 @@ export default function Page() {
       const res = await fetch("/api/parse-job", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: values.input }),
+        body: JSON.stringify({ input: values.input, mode: values.mode }),
       });
       parsedJob = (await res.json()) as Job;
       sessionStorage.setItem("coldcall.job", JSON.stringify(parsedJob));
     } catch {
       parsedJob = FALLBACK_JOB;
+    }
+    if (values.mode === "pitch") {
+      baseOptions.fund = fundNameFor(
+        `${parsedJob.cultureHints} ${parsedJob.role}`
+      );
     }
     setJob(parsedJob);
     await minRead;
@@ -70,7 +76,7 @@ export default function Page() {
 
     setResearchStep(2);
     const minPlan = wait(1800);
-    let newPlan = buildFallbackPlan(parsedJob, values.duration, values.surprise);
+    let newPlan = buildFallbackPlan(parsedJob, values.duration, values.surprise, values.mode);
     try {
       const res = await fetch("/api/interview-plan", {
         method: "POST",
@@ -81,6 +87,7 @@ export default function Page() {
           level: values.level,
           surprise: values.surprise,
           cv: values.cv || undefined,
+          mode: values.mode,
         }),
       });
       const data = await res.json();
@@ -149,7 +156,7 @@ export default function Page() {
         />
       )}
       {screen === "prep" && (
-        <ResearchScreen step={researchStep} company={researchCompany} />
+        <ResearchScreen step={researchStep} company={researchCompany} mode={setup.mode} />
       )}
       {screen === "plan" && plan && (
         <PlanScreen
@@ -157,6 +164,7 @@ export default function Page() {
           plan={plan}
           level={setup.level}
           duration={setup.duration}
+          mode={setup.mode}
           onStart={() =>
             setScreen(
               typeof Notification !== "undefined" &&
@@ -168,10 +176,18 @@ export default function Page() {
           onAdjust={() => setScreen("home")}
         />
       )}
-      {screen === "notify" && <NotifyScreen onDone={() => setScreen("incoming")} />}
+      {screen === "notify" && <NotifyScreen mode={setup.mode} onDone={() => setScreen("incoming")} />}
       {screen === "incoming" && (
         <IncomingCallScreen
           job={job}
+          caller={
+            setup.mode === "pitch"
+              ? {
+                  line1: (options.fund ?? "Northlane Ventures").replace(/ Ventures$/, ""),
+                  line2: "Ventures",
+                }
+              : { line1: job.company, line2: "Recruiting" }
+          }
           onAccept={() => setScreen("live")}
           onDecline={newJob}
         />
@@ -191,6 +207,7 @@ export default function Page() {
           cv={options.cv}
           feedback={feedback}
           setFeedback={setFeedback}
+          mode={setup.mode}
           onCallAgain={callAgain}
           onVideoRound={() => setScreen("video")}
           onNewJob={newJob}
@@ -203,6 +220,7 @@ export default function Page() {
       )}
       {screen === "mentor" && (
         <MentorScreen
+          mode={setup.mode}
           backLabel={mentorFrom === "landing" ? "Back" : "Back to your results"}
           onBack={() => setScreen(mentorFrom)}
         />

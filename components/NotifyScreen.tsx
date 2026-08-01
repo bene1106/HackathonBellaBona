@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import NotificationCard from "./NotificationCard";
+import { Mode } from "../lib/types";
+import { RECRUITER_NAME, PARTNER_NAME } from "../lib/prompts";
 
 function PhoneAvatar() {
   return (
@@ -13,7 +15,14 @@ function PhoneAvatar() {
   );
 }
 
-export default function NotifyScreen({ onDone }: { onDone: () => void }) {
+export default function NotifyScreen({
+  mode = "job",
+  onDone,
+}: {
+  mode?: Mode;
+  onDone: () => void;
+}) {
+  const caller = mode === "pitch" ? PARTNER_NAME : RECRUITER_NAME;
   const [now, setNow] = useState<Date | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -56,7 +65,7 @@ export default function NotifyScreen({ onDone }: { onDone: () => void }) {
           <NotificationCard
             avatar={<PhoneAvatar />}
             title="ColdCall"
-            body="Alex Weber tried to call you. Tap to call back."
+            body={`${caller} tried to call you. Tap to call back.`}
             meta="now"
           />
         </div>
@@ -64,7 +73,11 @@ export default function NotifyScreen({ onDone }: { onDone: () => void }) {
           <NotificationCard
             avatar={<PhoneAvatar />}
             title="ColdCall"
-            body="You are 12 points from READY. Next call is coming."
+            body={
+              mode === "pitch"
+                ? "You are 12 points from FUNDABLE. Next call is coming."
+                : "You are 12 points from READY. Next call is coming."
+            }
             meta="2h"
           />
         </div>

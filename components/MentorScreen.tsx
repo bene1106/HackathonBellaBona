@@ -2,6 +2,31 @@
 
 import { useState } from "react";
 import NotificationCard from "./NotificationCard";
+import { Mode } from "../lib/types";
+
+const PITCH_MENTORS = [
+  {
+    name: "Elena Marsh",
+    role: "Founder of Plateful, raised seed 2025",
+    rating: "4.9",
+    price: "30 min · 49 EUR",
+    initials: "EM",
+  },
+  {
+    name: "Tom Skala",
+    role: "Sold FreshCrate, exited 2024",
+    rating: "4.8",
+    price: "45 min · 59 EUR",
+    initials: "TS",
+  },
+  {
+    name: "Priya Nair",
+    role: "Angel, 20 pre-seed checks",
+    rating: "5.0",
+    price: "30 min · 39 EUR",
+    initials: "PN",
+  },
+];
 
 const MENTORS = [
   {
@@ -28,12 +53,16 @@ const MENTORS = [
 ];
 
 export default function MentorScreen({
+  mode = "job",
   onBack,
   backLabel = "Back to your results",
 }: {
+  mode?: Mode;
   onBack: () => void;
   backLabel?: string;
 }) {
+  const pitch = mode === "pitch";
+  const mentors = pitch ? PITCH_MENTORS : MENTORS;
   const [selected, setSelected] = useState(0);
   const [joined, setJoined] = useState(false);
 
@@ -49,7 +78,7 @@ export default function MentorScreen({
           You are on the list.
         </h1>
         <p className="mt-3 max-w-[30ch] text-sm leading-relaxed text-mute">
-          Mentor calls open soon. We will text you when {MENTORS[selected].name}{" "}
+          Mentor calls open soon. We will text you when {mentors[selected].name}{" "}
           has a slot.
         </p>
         <button
@@ -66,7 +95,7 @@ export default function MentorScreen({
     <div className="screen-in flex flex-1 flex-col px-6 pb-8 pt-12">
       <div>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mute/80">
-          Human mentors
+          {pitch ? "Founder mentors" : "Human mentors"}
         </p>
         <h1 className="mt-2 font-display text-4xl font-bold leading-[1.08]">
           Ready is just
@@ -74,12 +103,14 @@ export default function MentorScreen({
           the start.
         </h1>
         <p className="mt-3 max-w-[32ch] text-sm leading-relaxed text-mute">
-          Talk to someone who got this exact job and passed the real interview.
+          {pitch
+            ? "Talk to a founder who pitched, raised, and remembers exactly how it went."
+            : "Talk to someone who got this exact job and passed the real interview."}
         </p>
       </div>
 
       <div className="mt-8 flex-1 space-y-2.5">
-        {MENTORS.map((m, i) => (
+        {mentors.map((m, i) => (
           <div
             key={m.name}
             className={`rounded-[22px] transition ${

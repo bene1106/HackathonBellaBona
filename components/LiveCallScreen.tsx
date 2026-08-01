@@ -7,6 +7,7 @@ import {
   buildRecruiterPrompt,
   buildFirstMessage,
   RECRUITER_NAME,
+  PARTNER_NAME,
   InterviewOptions,
 } from "../lib/prompts";
 
@@ -107,10 +108,12 @@ function LiveCall({
     <div className="screen-in flex flex-1 flex-col items-center justify-between pb-14 pt-16">
       <div className="flex flex-col items-center">
         <h1 className="px-6 text-center font-display text-3xl font-semibold">
-          {RECRUITER_NAME}
+          {options.mode === "pitch" ? PARTNER_NAME : RECRUITER_NAME}
         </h1>
         <p className="mt-1 text-sm text-paper/50">
-          {job.company} Recruiting
+          {options.mode === "pitch"
+            ? options.fund ?? "Northlane Ventures"
+            : `${job.company} Recruiting`}
         </p>
         <p className="mt-5 font-mono text-4xl font-light tabular-nums text-paper">
           {connected ? formatTime(seconds) : "0:00"}

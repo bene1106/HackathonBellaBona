@@ -5,13 +5,17 @@ import { Job } from "../lib/types";
 
 export default function IncomingCallScreen({
   job,
+  caller,
   onAccept,
   onDecline,
 }: {
   job: Job;
+  caller?: { line1: string; line2: string };
   onAccept: () => void;
   onDecline: () => void;
 }) {
+  const line1 = caller?.line1 ?? job.company;
+  const line2 = caller?.line2 ?? "Recruiting";
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -53,15 +57,15 @@ export default function IncomingCallScreen({
           incoming call
         </p>
         <h1 className="mt-2 px-6 text-center font-display text-[2.6rem] font-semibold leading-tight">
-          {job.company}
-          <span className="block text-[1.6rem] font-medium text-paper/80">Recruiting</span>
+          {line1}
+          <span className="block text-[1.6rem] font-medium text-paper/80">{line2}</span>
         </h1>
         <p className="mt-2 font-mono text-[13px] text-paper/45">mobile · Germany</p>
       </div>
 
       <div className="relative z-10 mt-auto flex h-32 w-32 items-center justify-center rounded-full border border-paper/10 bg-paper/10 shadow-[0_0_60px_rgba(47,214,114,0.15)]">
         <span className="font-display text-5xl font-bold text-paper">
-          {job.company.slice(0, 1).toUpperCase()}
+          {line1.slice(0, 1).toUpperCase()}
         </span>
       </div>
 

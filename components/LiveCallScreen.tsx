@@ -143,9 +143,13 @@ function LiveCall({
           {error
             ? error
             : !connected
-              ? "Connecting to your recruiter…"
+              ? options.mode === "pitch"
+                ? "Connecting to your investor…"
+                : "Connecting to your recruiter…"
               : speaking
-                ? "Recruiter is speaking…"
+                ? options.mode === "pitch"
+                  ? "Investor is speaking…"
+                  : "Recruiter is speaking…"
                 : "Listening to you…"}
         </p>
       </div>

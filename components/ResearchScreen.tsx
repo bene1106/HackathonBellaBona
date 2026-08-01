@@ -45,7 +45,7 @@ export default function ResearchScreen({
       <h1 className="mt-10 text-center font-display text-2xl font-bold leading-snug">
         Building your
         <br />
-        interview plan.
+        {mode === "pitch" ? "pitch plan." : "interview plan."}
       </h1>
 
       <ul className="mx-auto mt-10 w-full max-w-[300px] space-y-5" aria-live="polite">

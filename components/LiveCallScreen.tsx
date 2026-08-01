@@ -75,7 +75,7 @@ function LiveCall({
           overrides: {
             agent: {
               prompt: { prompt: buildRecruiterPrompt(job, difficulty, options) },
-              firstMessage: buildFirstMessage(job),
+              firstMessage: buildFirstMessage(job, options),
             },
           },
         });

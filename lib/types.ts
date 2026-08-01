@@ -27,4 +27,25 @@ export type Feedback = {
   oneLineSummary: string;
 };
 
-export type Screen = "home" | "prep" | "incoming" | "live" | "feedback" | "video";
+export type PlannedQuestion = {
+  question: string;
+  why: string;
+};
+
+export type InterviewPlan = {
+  focusAreas: string[];
+  plannedQuestions: PlannedQuestion[];
+  curveballTopic?: string;
+  whatGoodLooksLike: string[];
+};
+
+export type Screen =
+  | "landing"
+  | "home"
+  | "prep"
+  | "plan"
+  | "incoming"
+  | "live"
+  | "feedback"
+  | "video"
+  | "mentor";

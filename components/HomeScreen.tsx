@@ -1,16 +1,44 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { DifficultyLevel } from "../lib/prompts";
+import { DifficultyLevel, DurationMinutes } from "../lib/prompts";
 
 const EXAMPLE_JOB =
   "Growth Marketing Manager at Bella&Bona in Munich. We are a food-tech startup delivering healthy office lunches. Looking for B2C growth experience, performance marketing skills, strong analytics, creativity, and German market knowledge.";
 
-const LEVELS: { value: DifficultyLevel; label: string }[] = [
-  { value: "easy", label: "Easy" },
-  { value: "medium", label: "Medium" },
-  { value: "hard", label: "Hard" },
+const LEVELS: { value: DifficultyLevel; label: string; hint: string }[] = [
+  { value: "easy", label: "Easy", hint: "Friendly recruiter, softball questions" },
+  { value: "medium", label: "Medium", hint: "Professional, asks follow-ups" },
+  { value: "hard", label: "Hard", hint: "Skeptical, interrupts, challenges weak answers" },
 ];
+
+const DURATIONS: { value: DurationMinutes; num: string; unit: string }[] = [
+  { value: 1, num: "1", unit: "min" },
+  { value: 5, num: "5", unit: "min" },
+  { value: 10, num: "10", unit: "min" },
+  { value: 30, num: "30", unit: "min" },
+  { value: 60, num: "1", unit: "hour" },
+];
+
+export type SetupValues = {
+  input: string;
+  cv: string;
+  cvFileName: string | null;
+  cvFileSize: number | null;
+  surprise: boolean;
+  level: DifficultyLevel;
+  duration: DurationMinutes;
+};
+
+export const DEFAULT_SETUP: SetupValues = {
+  input: "",
+  cv: "",
+  cvFileName: null,
+  cvFileSize: null,
+  surprise: true,
+  level: "medium",
+  duration: 5,
+};
 
 async function extractPdfText(file: File): Promise<string> {
   // pdfjs v5 ESM breaks under this webpack config, so we self-host the files
@@ -31,22 +59,36 @@ async function extractPdfText(file: File): Promise<string> {
   return pages.join("\n").replace(/\s+/g, " ").trim();
 }
 
+function formatSize(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function FieldLabel({ children }: { children: string }) {
+  return (
+    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper/40">
+      {children}
+    </p>
+  );
+}
+
 export default function HomeScreen({
+  initial = DEFAULT_SETUP,
   onSubmit,
+  onBack,
 }: {
-  onSubmit: (
-    input: string,
-    cv: string,
-    surprise: boolean,
-    level: DifficultyLevel
-  ) => void;
+  initial?: SetupValues;
+  onSubmit: (values: SetupValues) => void;
+  onBack?: () => void;
 }) {
-  const [input, setInput] = useState("");
-  const [cv, setCv] = useState("");
-  const [showCv, setShowCv] = useState(false);
-  const [surprise, setSurprise] = useState(true);
-  const [level, setLevel] = useState<DifficultyLevel>("medium");
-  const [cvFileName, setCvFileName] = useState<string | null>(null);
+  const [input, setInput] = useState(initial.input);
+  const [cv, setCv] = useState(initial.cv);
+  const [showCv, setShowCv] = useState(Boolean(initial.cv));
+  const [surprise, setSurprise] = useState(initial.surprise);
+  const [level, setLevel] = useState<DifficultyLevel>(initial.level);
+  const [duration, setDuration] = useState<DurationMinutes>(initial.duration);
+  const [cvFileName, setCvFileName] = useState<string | null>(initial.cvFileName);
+  const [cvFileSize, setCvFileSize] = useState<number | null>(initial.cvFileSize);
   const [cvBusy, setCvBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
@@ -58,10 +100,12 @@ export default function HomeScreen({
       if (text) {
         setCv(text);
         setCvFileName(file.name);
+        setCvFileSize(file.size);
       }
     } catch (e) {
       console.error("[coldcall] pdf extraction failed:", e);
       setCvFileName(null);
+      setCvFileSize(null);
     }
     setCvBusy(false);
   };
@@ -69,97 +113,168 @@ export default function HomeScreen({
   const removePdf = () => {
     setCv("");
     setCvFileName(null);
+    setCvFileSize(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
   return (
-    <div className="screen-in flex flex-1 flex-col justify-between px-6 pb-8 pt-16">
-      <h1 className="font-display text-5xl font-bold leading-[1.05]">
-        Your phone is about to ring.
-      </h1>
+    <div className="screen-in flex flex-1 flex-col px-6 pb-8 pt-12">
+      <div>
+        <h1 className="font-display text-4xl font-bold leading-[1.08]">
+          Set up
+          <br />
+          your interview.
+        </h1>
+        <p className="mt-2 text-sm text-paper/55">
+          Your recruiter preps from the real posting and your CV.
+        </p>
+      </div>
 
-      <div className="space-y-3">
-        <div className="relative">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Paste job posting link or text"
-            rows={4}
-            className="w-full resize-none rounded-2xl border border-paper/15 bg-paper/5 p-4 text-base text-paper placeholder:text-paper/40 focus:border-accept/60 focus:outline-none"
-          />
-          {!input && (
-            <button
-              onClick={() => setInput(EXAMPLE_JOB)}
-              className="absolute bottom-3.5 left-3 rounded-full border border-paper/15 bg-ink px-3 py-1.5 text-xs text-paper/60 transition active:scale-95"
-            >
-              Try an example job
-            </button>
-          )}
-        </div>
-
-        {showCv ? (
-          <div className="space-y-2">
-            {cvFileName ? (
-              <div className="flex items-center justify-between rounded-2xl border border-paper/15 bg-paper/5 px-4 py-3">
-                <span className="truncate text-sm text-paper/80">{cvFileName}</span>
-                <button
-                  onClick={removePdf}
-                  className="ml-3 shrink-0 text-sm text-decline"
-                >
-                  Remove
-                </button>
-              </div>
-            ) : (
-              <>
-                <textarea
-                  value={cv}
-                  onChange={(e) => setCv(e.target.value)}
-                  placeholder="Paste your CV (optional). The recruiter will probe what you claim"
-                  rows={3}
-                  autoFocus
-                  className="w-full resize-none rounded-2xl border border-paper/15 bg-paper/5 p-4 text-sm text-paper placeholder:text-paper/40 focus:border-accept/60 focus:outline-none"
-                />
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  disabled={cvBusy}
-                  className="text-sm text-paper/50 underline decoration-paper/30 underline-offset-4 disabled:opacity-50"
-                >
-                  {cvBusy ? "Reading PDF…" : "or upload a PDF"}
-                </button>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept=".pdf"
-                  className="hidden"
-                  onChange={(e) => handlePdf(e.target.files?.[0])}
-                />
-              </>
+      <div className="mt-8 flex-1 space-y-6">
+        <div className="space-y-2">
+          <FieldLabel>The job</FieldLabel>
+          <div className="relative">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Paste job posting link or text"
+              rows={4}
+              className="w-full resize-none rounded-2xl border border-paper/15 bg-paper/5 p-4 text-base text-paper placeholder:text-paper/40 focus:border-accept/60 focus:outline-none"
+            />
+            {!input && (
+              <button
+                onClick={() => setInput(EXAMPLE_JOB)}
+                className="absolute bottom-3.5 left-3 rounded-full border border-paper/15 bg-ink px-3 py-1.5 text-xs text-paper/60 transition active:scale-95"
+              >
+                Try an example job
+              </button>
             )}
           </div>
-        ) : (
-          <button
-            onClick={() => setShowCv(true)}
-            className="text-sm text-paper/50 underline decoration-paper/30 underline-offset-4"
-          >
-            + Add your CV (optional)
-          </button>
-        )}
+        </div>
 
-        <div className="grid grid-cols-3 gap-1 rounded-2xl border border-paper/10 p-1">
-          {LEVELS.map((l) => (
-            <button
-              key={l.value}
-              onClick={() => setLevel(l.value)}
-              aria-pressed={level === l.value}
-              className={`rounded-xl py-2.5 text-sm transition ${
-                level === l.value
-                  ? "bg-paper/15 font-semibold text-paper"
-                  : "text-paper/50"
-              }`}
-            >
-              {l.label}
-            </button>
-          ))}
+        <div className="space-y-2">
+          <FieldLabel>Your CV, optional</FieldLabel>
+          {cvFileName ? (
+            <div className="flex items-center gap-3 rounded-2xl border border-accept/30 bg-accept/[0.07] px-4 py-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accept/15 text-accept">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-paper">{cvFileName}</p>
+                <p className="font-mono text-[11px] text-paper/45">
+                  {cvFileSize ? `${formatSize(cvFileSize)} · ` : ""}CV attached
+                </p>
+              </div>
+              <button
+                onClick={removePdf}
+                className="shrink-0 text-sm text-decline"
+              >
+                Remove
+              </button>
+            </div>
+          ) : showCv ? (
+            <div className="space-y-2">
+              <textarea
+                value={cv}
+                onChange={(e) => setCv(e.target.value)}
+                placeholder="Paste your CV. The recruiter will probe what you claim"
+                rows={3}
+                autoFocus
+                className="w-full resize-none rounded-2xl border border-paper/15 bg-paper/5 p-4 text-sm text-paper placeholder:text-paper/40 focus:border-accept/60 focus:outline-none"
+              />
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={cvBusy}
+                className="text-sm text-paper/50 underline decoration-paper/30 underline-offset-4 disabled:opacity-50"
+              >
+                {cvBusy ? "Reading PDF…" : "or upload a PDF"}
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={cvBusy}
+                className="rounded-full border border-paper/15 px-4 py-2 text-sm text-paper/70 transition active:scale-95 disabled:opacity-50"
+              >
+                {cvBusy ? "Reading PDF…" : "Upload PDF"}
+              </button>
+              <button
+                onClick={() => setShowCv(true)}
+                className="text-sm text-paper/50 underline decoration-paper/30 underline-offset-4"
+              >
+                or paste text
+              </button>
+            </div>
+          )}
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={(e) => handlePdf(e.target.files?.[0])}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <FieldLabel>Length</FieldLabel>
+          <div className="grid grid-cols-5 gap-1 rounded-2xl border border-paper/10 p-1">
+            {DURATIONS.map((d) => (
+              <button
+                key={d.value}
+                onClick={() => setDuration(d.value)}
+                aria-pressed={duration === d.value}
+                className={`flex flex-col items-center rounded-xl py-2 transition ${
+                  duration === d.value
+                    ? "bg-paper/15 text-paper"
+                    : "text-paper/45"
+                }`}
+              >
+                <span className="font-display text-base font-semibold leading-none">
+                  {d.num}
+                </span>
+                <span className="mt-1 font-mono text-[10px] leading-none">
+                  {d.unit}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <FieldLabel>Difficulty</FieldLabel>
+          <div className="space-y-1.5">
+            {LEVELS.map((l) => (
+              <button
+                key={l.value}
+                onClick={() => setLevel(l.value)}
+                aria-pressed={level === l.value}
+                className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
+                  level === l.value
+                    ? "border-accept/50 bg-accept/[0.06]"
+                    : "border-paper/10"
+                }`}
+              >
+                <span>
+                  <span
+                    className={`block text-sm font-semibold ${
+                      level === l.value ? "text-paper" : "text-paper/70"
+                    }`}
+                  >
+                    {l.label}
+                  </span>
+                  <span className="block text-xs text-paper/45">{l.hint}</span>
+                </span>
+                {level === l.value && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#2FD672" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden>
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         <button
@@ -168,7 +283,14 @@ export default function HomeScreen({
           aria-checked={surprise}
           className="flex w-full items-center justify-between rounded-2xl border border-paper/10 px-4 py-3"
         >
-          <span className="text-sm text-paper/70">Surprise questions</span>
+          <span className="text-left">
+            <span className="block text-sm font-semibold text-paper/80">
+              Surprise questions
+            </span>
+            <span className="block text-xs text-paper/45">
+              One curveball you cannot rehearse
+            </span>
+          </span>
           <span
             className={`relative inline-block h-6 w-11 shrink-0 rounded-full transition-colors ${
               surprise ? "bg-accept" : "bg-paper/20"
@@ -181,14 +303,34 @@ export default function HomeScreen({
             />
           </span>
         </button>
+      </div>
 
+      <div className="mt-8 space-y-3">
         <button
-          onClick={() => onSubmit(input.trim(), cv.trim(), surprise, level)}
-          disabled={!input.trim()}
-          className="w-full rounded-2xl bg-accept py-4 font-display text-lg font-semibold text-ink transition active:scale-[0.98] disabled:opacity-40"
+          onClick={() =>
+            onSubmit({
+              input: input.trim(),
+              cv: cv.trim(),
+              cvFileName,
+              cvFileSize,
+              surprise,
+              level,
+              duration,
+            })
+          }
+          disabled={!input.trim() || cvBusy}
+          className="w-full rounded-full bg-accept py-4 font-display text-lg font-semibold text-ink transition active:scale-[0.98] disabled:opacity-40"
         >
-          Get the call
+          Build my interview plan
         </button>
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="w-full text-center text-sm text-paper/50"
+          >
+            Back
+          </button>
+        )}
       </div>
     </div>
   );

@@ -3,8 +3,8 @@
 import { useCallback, useState } from "react";
 import { Screen, Job, TranscriptEntry, Feedback } from "../lib/types";
 import { FALLBACK_JOB } from "../lib/fallbackJob";
-import { InterviewOptions, DifficultyLevel } from "../lib/prompts";
-import HomeScreen from "../components/HomeScreen";
+import { InterviewOptions } from "../lib/prompts";
+import HomeScreen, { SetupValues } from "../components/HomeScreen";
 import PrepScreen from "../components/PrepScreen";
 import IncomingCallScreen from "../components/IncomingCallScreen";
 import LiveCallScreen from "../components/LiveCallScreen";
@@ -19,17 +19,21 @@ export default function Page() {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [difficulty, setDifficulty] = useState(1);
 
-  const startPrep = useCallback(
-    async (input: string, cv: string, surprise: boolean, level: DifficultyLevel) => {
+  const startPrep = useCallback(async (values: SetupValues) => {
     setScreen("prep");
     setDifficulty(1);
-    setOptions({ cv: cv || undefined, surprise, level });
+    setOptions({
+      cv: values.cv || undefined,
+      surprise: values.surprise,
+      level: values.level,
+      duration: values.duration,
+    });
     const minPrep = new Promise((r) => setTimeout(r, 3500));
     try {
       const res = await fetch("/api/parse-job", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify({ input: values.input }),
       });
       const data = (await res.json()) as Job;
       setJob(data);
@@ -39,9 +43,7 @@ export default function Page() {
     }
     await minPrep;
     setScreen("incoming");
-    },
-    []
-  );
+  }, []);
 
   const handleCallEnded = useCallback((entries: TranscriptEntry[]) => {
     setTranscript(entries);

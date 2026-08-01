@@ -8,9 +8,9 @@ CallMeJob gives you that chance before the real interview. Paste a job posting, 
 
 ## 🎥 Demo video
 
-[![Watch the CallMeJob product demo on YouTube](https://img.youtube.com/vi/jhPqx468PfE/maxresdefault.jpg)](https://www.youtube.com/watch?v=jhPqx468PfE)
+[![Watch the CallMeJob product demo on YouTube](https://img.youtube.com/vi/VXhrUJBY2D4/maxresdefault.jpg)](https://youtu.be/VXhrUJBY2D4)
 
-▶️ **[Watch the latest product demo on YouTube](https://www.youtube.com/watch?v=jhPqx468PfE)**<br>
+▶️ **[Watch the latest product demo on YouTube](https://youtu.be/VXhrUJBY2D4)**<br>
 🚀 **[Try the live demo](https://callmejob.vercel.app)**
 
 ## Why CallMeJob

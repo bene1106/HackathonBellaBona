@@ -5,7 +5,7 @@ import NotificationCard from "./NotificationCard";
 
 function PhoneAvatar() {
   return (
-    <span className="flex h-full w-full items-center justify-center rounded-xl bg-accept/15 text-accept">
+    <span className="flex h-full w-full items-center justify-center rounded-xl bg-accept/15 text-deep">
       <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden>
         <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.4 11.4 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .57 3.57 1 1 0 0 1-.25 1.02l-2.2 2.2Z" />
       </svg>
@@ -45,8 +45,8 @@ export default function NotifyScreen({ onDone }: { onDone: () => void }) {
       </div>
 
       <div className="relative z-10 text-center">
-        <p className="font-mono text-[13px] text-paper/50">{date}</p>
-        <p className="mt-1 font-display text-6xl font-bold tabular-nums text-paper/90">
+        <p className="font-mono text-[13px] text-mute">{date}</p>
+        <p className="mt-1 font-display text-6xl font-bold tabular-nums text-ink">
           {time}
         </p>
       </div>
@@ -74,7 +74,7 @@ export default function NotifyScreen({ onDone }: { onDone: () => void }) {
         <h1 className="mx-auto max-w-[16ch] font-display text-3xl font-bold leading-tight">
           Your recruiter calls when you least expect it.
         </h1>
-        <p className="mx-auto mt-3 max-w-[30ch] text-sm leading-relaxed text-paper/55">
+        <p className="mx-auto mt-3 max-w-[30ch] text-sm leading-relaxed text-mute">
           Real interviews are not scheduled around you. Neither are ours.
         </p>
         <button
@@ -84,7 +84,7 @@ export default function NotifyScreen({ onDone }: { onDone: () => void }) {
         >
           Turn on notifications
         </button>
-        <button onClick={onDone} className="mt-4 w-full text-center text-sm text-paper/50">
+        <button onClick={onDone} className="mt-4 w-full text-center text-sm text-mute">
           Not now
         </button>
       </div>

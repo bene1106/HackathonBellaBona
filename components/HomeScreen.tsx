@@ -66,7 +66,7 @@ function formatSize(bytes: number): string {
 
 function FieldLabel({ children }: { children: string }) {
   return (
-    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper/40">
+    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mute/80">
       {children}
     </p>
   );
@@ -125,7 +125,7 @@ export default function HomeScreen({
           <br />
           your interview.
         </h1>
-        <p className="mt-2 text-sm text-paper/55">
+        <p className="mt-2 text-sm text-mute">
           Your recruiter preps from the real posting and your CV.
         </p>
       </div>
@@ -139,12 +139,12 @@ export default function HomeScreen({
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste job posting link or text"
               rows={4}
-              className="w-full resize-none rounded-2xl border border-paper/15 bg-paper/5 p-4 text-base text-paper placeholder:text-paper/40 focus:border-accept/60 focus:outline-none"
+              className="w-full resize-none rounded-2xl border border-line bg-card p-4 text-base text-ink placeholder:text-mute/60 focus:border-accept/60 focus:outline-none"
             />
             {!input && (
               <button
                 onClick={() => setInput(EXAMPLE_JOB)}
-                className="absolute bottom-3.5 left-3 rounded-full border border-paper/15 bg-ink px-3 py-1.5 text-xs text-paper/60 transition active:scale-95"
+                className="absolute bottom-3.5 left-3 rounded-full border border-line bg-card px-3 py-1.5 text-xs text-mute transition active:scale-95"
               >
                 Try an example job
               </button>
@@ -156,20 +156,20 @@ export default function HomeScreen({
           <FieldLabel>Your CV, optional</FieldLabel>
           {cvFileName ? (
             <div className="flex items-center gap-3 rounded-2xl border border-accept/30 bg-accept/[0.07] px-4 py-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accept/15 text-accept">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accept/15 text-deep">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-paper">{cvFileName}</p>
-                <p className="font-mono text-[11px] text-paper/45">
+                <p className="truncate text-sm font-medium text-ink">{cvFileName}</p>
+                <p className="font-mono text-[11px] text-mute/80">
                   {cvFileSize ? `${formatSize(cvFileSize)} · ` : ""}CV attached
                 </p>
               </div>
               <button
                 onClick={removePdf}
-                className="shrink-0 text-sm text-decline"
+                className="shrink-0 text-sm font-medium text-[#C23636]"
               >
                 Remove
               </button>
@@ -182,12 +182,12 @@ export default function HomeScreen({
                 placeholder="Paste your CV. The recruiter will probe what you claim"
                 rows={3}
                 autoFocus
-                className="w-full resize-none rounded-2xl border border-paper/15 bg-paper/5 p-4 text-sm text-paper placeholder:text-paper/40 focus:border-accept/60 focus:outline-none"
+                className="w-full resize-none rounded-2xl border border-line bg-card p-4 text-sm text-ink placeholder:text-mute/60 focus:border-accept/60 focus:outline-none"
               />
               <button
                 onClick={() => fileRef.current?.click()}
                 disabled={cvBusy}
-                className="text-sm text-paper/50 underline decoration-paper/30 underline-offset-4 disabled:opacity-50"
+                className="text-sm text-mute underline decoration-mute/40 underline-offset-4 disabled:opacity-50"
               >
                 {cvBusy ? "Reading PDF…" : "or upload a PDF"}
               </button>
@@ -197,13 +197,13 @@ export default function HomeScreen({
               <button
                 onClick={() => fileRef.current?.click()}
                 disabled={cvBusy}
-                className="rounded-full border border-paper/15 px-4 py-2 text-sm text-paper/70 transition active:scale-95 disabled:opacity-50"
+                className="rounded-full border border-line px-4 py-2 text-sm text-mute transition active:scale-95 disabled:opacity-50"
               >
                 {cvBusy ? "Reading PDF…" : "Upload PDF"}
               </button>
               <button
                 onClick={() => setShowCv(true)}
-                className="text-sm text-paper/50 underline decoration-paper/30 underline-offset-4"
+                className="text-sm text-mute underline decoration-mute/40 underline-offset-4"
               >
                 or paste text
               </button>
@@ -220,7 +220,7 @@ export default function HomeScreen({
 
         <div className="space-y-2">
           <FieldLabel>Length</FieldLabel>
-          <div className="grid grid-cols-5 gap-1 rounded-2xl border border-paper/10 p-1">
+          <div className="grid grid-cols-5 gap-1 rounded-2xl border border-line p-1">
             {DURATIONS.map((d) => (
               <button
                 key={d.value}
@@ -228,8 +228,8 @@ export default function HomeScreen({
                 aria-pressed={duration === d.value}
                 className={`flex flex-col items-center rounded-xl py-2 transition ${
                   duration === d.value
-                    ? "bg-paper/15 text-paper"
-                    : "text-paper/45"
+                    ? "bg-ink text-bone"
+                    : "text-mute/80"
                 }`}
               >
                 <span className="font-display text-base font-semibold leading-none">
@@ -254,21 +254,21 @@ export default function HomeScreen({
                 className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
                   level === l.value
                     ? "border-accept/50 bg-accept/[0.06]"
-                    : "border-paper/10"
+                    : "border-line"
                 }`}
               >
                 <span>
                   <span
                     className={`block text-sm font-semibold ${
-                      level === l.value ? "text-paper" : "text-paper/70"
+                      level === l.value ? "text-ink" : "text-mute"
                     }`}
                   >
                     {l.label}
                   </span>
-                  <span className="block text-xs text-paper/45">{l.hint}</span>
+                  <span className="block text-xs text-mute/80">{l.hint}</span>
                 </span>
                 {level === l.value && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#2FD672" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#147A46" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden>
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
                 )}
@@ -281,23 +281,23 @@ export default function HomeScreen({
           onClick={() => setSurprise((s) => !s)}
           role="switch"
           aria-checked={surprise}
-          className="flex w-full items-center justify-between rounded-2xl border border-paper/10 px-4 py-3"
+          className="flex w-full items-center justify-between rounded-2xl border border-line px-4 py-3"
         >
           <span className="text-left">
-            <span className="block text-sm font-semibold text-paper/80">
+            <span className="block text-sm font-semibold text-ink/80">
               Surprise questions
             </span>
-            <span className="block text-xs text-paper/45">
+            <span className="block text-xs text-mute/80">
               One curveball you cannot rehearse
             </span>
           </span>
           <span
             className={`relative inline-block h-6 w-11 shrink-0 rounded-full transition-colors ${
-              surprise ? "bg-accept" : "bg-paper/20"
+              surprise ? "bg-accept" : "bg-ink/15"
             }`}
           >
             <span
-              className={`absolute left-0 top-0.5 inline-block h-5 w-5 rounded-full bg-paper transition-transform ${
+              className={`absolute left-0 top-0.5 inline-block h-5 w-5 rounded-full bg-card transition-transform ${
                 surprise ? "translate-x-[22px]" : "translate-x-0.5"
               }`}
             />
@@ -326,7 +326,7 @@ export default function HomeScreen({
         {onBack && (
           <button
             onClick={onBack}
-            className="w-full text-center text-sm text-paper/50"
+            className="w-full text-center text-sm text-mute"
           >
             Back
           </button>

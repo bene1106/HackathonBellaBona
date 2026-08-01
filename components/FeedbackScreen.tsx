@@ -42,10 +42,10 @@ function ShareQR() {
   if (!url) return null;
   return (
     <div className="flex items-center justify-center gap-3 pt-4">
-      <div className="rounded-lg bg-paper p-1.5">
-        <QRCodeSVG value={url} size={56} bgColor="#F5F3EE" fgColor="#0B1020" />
+      <div className="rounded-lg bg-card p-1.5">
+        <QRCodeSVG value={url} size={56} bgColor="#FFFFFF" fgColor="#0B1020" />
       </div>
-      <p className="max-w-[18ch] text-xs leading-snug text-paper/50">
+      <p className="max-w-[18ch] text-xs leading-snug text-mute">
         Try it on your own phone. Scan to get the call.
       </p>
     </div>
@@ -75,12 +75,12 @@ function ScoreRing({ score }: { score: number }) {
 
   const r = 64;
   const c = 2 * Math.PI * r;
-  const color = score >= 80 ? "#2FD672" : score >= 60 ? "#F5F3EE" : "#FF4B4B";
+  const color = score >= 80 ? "#2FD672" : score >= 60 ? "#0B1020" : "#E23B3B";
 
   return (
     <div className="relative h-44 w-44">
       <svg viewBox="0 0 160 160" className="h-full w-full -rotate-90">
-        <circle cx="80" cy="80" r={r} fill="none" stroke="rgba(245,243,238,0.1)" strokeWidth="10" />
+        <circle cx="80" cy="80" r={r} fill="none" stroke="rgba(11,16,32,0.08)" strokeWidth="10" />
         <circle
           cx="80"
           cy="80"
@@ -95,7 +95,7 @@ function ScoreRing({ score }: { score: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="font-display text-5xl font-bold tabular-nums">{shown}</span>
-        <span className="text-xs text-paper/50">/ 100</span>
+        <span className="text-xs text-mute">/ 100</span>
       </div>
     </div>
   );
@@ -113,15 +113,15 @@ function CategoryBars({ feedback }: { feedback: Feedback }) {
       {entries.map(([label, value], i) => (
         <div key={label}>
           <div className="flex items-baseline justify-between">
-            <span className="text-xs text-paper/60">{label}</span>
-            <span className="text-xs tabular-nums text-paper/80">{value}</span>
+            <span className="text-xs text-mute">{label}</span>
+            <span className="text-xs tabular-nums text-ink/80">{value}</span>
           </div>
-          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-paper/10">
+          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-ink/10">
             <div
               className="h-full origin-left rounded-full"
               style={{
                 width: `${value}%`,
-                backgroundColor: value >= 80 ? "#2FD672" : value >= 60 ? "#F5F3EE" : "#FF4B4B",
+                backgroundColor: value >= 80 ? "#2FD672" : value >= 60 ? "#0B1020" : "#E23B3B",
                 animation: `bar-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${0.9 + i * 0.12}s both`,
               }}
             />
@@ -190,7 +190,7 @@ export default function FeedbackScreen({
     return (
       <div className="screen-in flex flex-1 flex-col items-center justify-center gap-5 px-8 text-center">
         <p className="font-display text-2xl">Couldn&apos;t score that call.</p>
-        <p className="text-sm text-paper/60">
+        <p className="text-sm text-mute">
           The call may have been too short to grade. Take the call again and answer at
           least one question.
         </p>
@@ -202,11 +202,11 @@ export default function FeedbackScreen({
         </button>
         <button
           onClick={onVideoRound}
-          className="w-full rounded-full border border-accept/40 py-3.5 font-display text-base text-accept"
+          className="w-full rounded-full border border-accept/40 py-3.5 font-display text-base text-deep"
         >
           Round 2: Video interview
         </button>
-        <button onClick={onNewJob} className="text-sm text-paper/60 underline">
+        <button onClick={onNewJob} className="text-sm text-mute underline">
           New job
         </button>
       </div>
@@ -216,8 +216,8 @@ export default function FeedbackScreen({
   if (!feedback) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6">
-        <div className="relative flex h-16 w-16 items-center justify-center rounded-full text-accept ring-pulse" />
-        <p className="font-display text-xl text-paper/90">Scoring your interview…</p>
+        <div className="relative flex h-16 w-16 items-center justify-center rounded-full text-deep ring-pulse" />
+        <p className="font-display text-xl text-ink">Scoring your interview…</p>
       </div>
     );
   }
@@ -225,15 +225,15 @@ export default function FeedbackScreen({
   const weakest = weakestQuestions(transcript);
   const verdictStyle =
     feedback.verdict === "READY"
-      ? "bg-accept/15 text-accept border-accept/40"
+      ? "bg-accept/15 text-deep border-accept/40"
       : feedback.verdict === "ALMOST"
-        ? "bg-paper/10 text-paper border-paper/30"
-        : "bg-decline/15 text-decline border-decline/40";
+        ? "bg-ink/10 text-ink border-ink/20"
+        : "bg-decline/10 text-[#C23636] border-decline/40";
 
   return (
     <div className="screen-in flex flex-1 flex-col px-6 pb-10 pt-12">
       <div className="flex flex-col items-center">
-        <p className="text-xs uppercase tracking-[0.25em] text-paper/50">
+        <p className="text-xs uppercase tracking-[0.25em] text-mute">
           {job.role} · {job.company}
         </p>
         <div className="mt-6">
@@ -244,38 +244,38 @@ export default function FeedbackScreen({
         >
           {feedback.verdict}
         </span>
-        <p className="mt-4 max-w-[38ch] text-center text-sm leading-relaxed text-paper/70">
+        <p className="mt-4 max-w-[38ch] text-center text-sm leading-relaxed text-mute">
           {feedback.oneLineSummary}
         </p>
       </div>
 
       <div className="mt-8 space-y-4">
-        <div className="rounded-[20px] bg-paper/5 p-4">
+        <div className="lift rounded-[20px] border border-line bg-card p-4">
           <CategoryBars feedback={feedback} />
         </div>
 
-        <section className="rounded-[20px] bg-paper/5 p-4">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-accept">
+        <section className="lift rounded-[20px] border border-line bg-card p-4">
+          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-deep">
             What worked
           </h2>
           <ul className="mt-3 space-y-2.5">
             {feedback.strengths.map((s, i) => (
-              <li key={i} className="flex gap-3 text-sm leading-relaxed text-paper/85">
-                <span className="mt-0.5 text-accept">✓</span>
+              <li key={i} className="flex gap-3 text-sm leading-relaxed text-ink/85">
+                <span className="mt-0.5 text-deep">✓</span>
                 {s}
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="rounded-[20px] bg-paper/5 p-4">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-paper/60">
+        <section className="lift rounded-[20px] border border-line bg-card p-4">
+          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-mute">
             Fix before the next call
           </h2>
           <ul className="mt-3 space-y-2.5">
             {feedback.improvements.map((s, i) => (
-              <li key={i} className="flex gap-3 text-sm leading-relaxed text-paper/85">
-                <span className="mt-0.5 text-paper/50">{i + 1}.</span>
+              <li key={i} className="flex gap-3 text-sm leading-relaxed text-ink/85">
+                <span className="mt-0.5 text-mute">{i + 1}.</span>
                 {s}
               </li>
             ))}
@@ -284,7 +284,7 @@ export default function FeedbackScreen({
 
         {weakest.length > 0 && (
           <section>
-            <h2 className="px-1 font-display text-sm font-semibold uppercase tracking-wider text-paper/60">
+            <h2 className="px-1 font-display text-sm font-semibold uppercase tracking-wider text-mute">
               Practice this again
             </h2>
             <div className="mt-3 space-y-2.5">
@@ -293,7 +293,7 @@ export default function FeedbackScreen({
                   key={q}
                   onClick={() => onRedoQuestion(q)}
                   avatar={
-                    <span className="flex h-full w-full items-center justify-center rounded-xl bg-paper/10 text-paper/70">
+                    <span className="flex h-full w-full items-center justify-center rounded-xl bg-ink/10 text-mute">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]" aria-hidden>
                         <path d="M3 12a9 9 0 1 0 2.6-6.4L3 8" />
                         <path d="M3 3v5h5" />
@@ -304,7 +304,7 @@ export default function FeedbackScreen({
                   body={
                     <span>
                       Your answer was thin here.
-                      <span className="mt-1 block text-sm font-semibold text-accept">
+                      <span className="mt-1 block text-sm font-semibold text-deep">
                         Redo just this
                       </span>
                     </span>
@@ -322,13 +322,13 @@ export default function FeedbackScreen({
             onClick={onMentor}
             className="w-full rounded-[20px] border border-accept/40 bg-accept/[0.07] p-4 text-left transition active:scale-[0.98]"
           >
-            <span className="block font-display text-base font-semibold text-paper">
+            <span className="block font-display text-base font-semibold text-ink">
               Ready is just the start.
             </span>
-            <span className="mt-1 block text-sm text-paper/60">
+            <span className="mt-1 block text-sm text-mute">
               Talk to someone who got this exact job.
             </span>
-            <span className="mt-2 block text-sm font-semibold text-accept">
+            <span className="mt-2 block text-sm font-semibold text-deep">
               Meet your mentor
             </span>
           </button>
@@ -341,20 +341,20 @@ export default function FeedbackScreen({
         </button>
         <button
           onClick={onVideoRound}
-          className="w-full rounded-full border border-accept/40 py-3.5 font-display text-base text-accept transition active:scale-[0.98]"
+          className="w-full rounded-full border border-accept/40 py-3.5 font-display text-base text-deep transition active:scale-[0.98]"
         >
           Round 2: Video interview
         </button>
         <button
           onClick={onNewJob}
-          className="w-full rounded-full border border-paper/20 py-3.5 font-display text-base text-paper/80 transition active:scale-[0.98]"
+          className="w-full rounded-full border border-ink/20 py-3.5 font-display text-base text-ink/80 transition active:scale-[0.98]"
         >
           New job
         </button>
         {feedback.verdict !== "READY" && (
           <button
             onClick={onMentor}
-            className="w-full text-center text-sm text-paper/50"
+            className="w-full text-center text-sm text-mute"
           >
             Talk to someone who got this job
           </button>

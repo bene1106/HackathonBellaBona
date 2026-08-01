@@ -40,7 +40,7 @@ export default function MentorScreen({
   if (joined) {
     return (
       <div className="screen-in flex flex-1 flex-col items-center justify-center px-8 text-center">
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-accept/15 text-accept">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-accept/15 text-deep">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
             <path d="M20 6 9 17l-5-5" />
           </svg>
@@ -48,15 +48,15 @@ export default function MentorScreen({
         <h1 className="mt-8 font-display text-3xl font-bold leading-tight">
           You are on the list.
         </h1>
-        <p className="mt-3 max-w-[30ch] text-sm leading-relaxed text-paper/60">
+        <p className="mt-3 max-w-[30ch] text-sm leading-relaxed text-mute">
           Mentor calls open soon. We will text you when {MENTORS[selected].name}{" "}
           has a slot.
         </p>
         <button
           onClick={onBack}
-          className="mt-10 w-full rounded-full border border-paper/20 py-3.5 font-display text-base text-paper/80 transition active:scale-[0.98]"
+          className="mt-10 w-full rounded-full border border-ink/20 py-3.5 font-display text-base text-ink/80 transition active:scale-[0.98]"
         >
-          Back to your results
+          {backLabel}
         </button>
       </div>
     );
@@ -65,7 +65,7 @@ export default function MentorScreen({
   return (
     <div className="screen-in flex flex-1 flex-col px-6 pb-8 pt-12">
       <div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper/40">
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mute/80">
           Human mentors
         </p>
         <h1 className="mt-2 font-display text-4xl font-bold leading-[1.08]">
@@ -73,7 +73,7 @@ export default function MentorScreen({
           <br />
           the start.
         </h1>
-        <p className="mt-3 max-w-[32ch] text-sm leading-relaxed text-paper/55">
+        <p className="mt-3 max-w-[32ch] text-sm leading-relaxed text-mute">
           Talk to someone who got this exact job and passed the real interview.
         </p>
       </div>
@@ -83,13 +83,13 @@ export default function MentorScreen({
           <div
             key={m.name}
             className={`rounded-[22px] transition ${
-              selected === i ? "ring-1 ring-accept/60" : ""
+              selected === i ? "ring-1 ring-deep/50" : ""
             }`}
           >
             <NotificationCard
               onClick={() => setSelected(i)}
               avatar={
-                <span className="flex h-full w-full items-center justify-center rounded-xl bg-accept/10 font-display text-sm font-bold text-accept">
+                <span className="flex h-full w-full items-center justify-center rounded-xl bg-accept/10 font-display text-sm font-bold text-deep">
                   {m.initials}
                 </span>
               }
@@ -97,7 +97,7 @@ export default function MentorScreen({
               body={
                 <span>
                   {m.role}
-                  <span className="mt-1 block font-mono text-[11px] text-paper/45">
+                  <span className="mt-1 block font-mono text-[11px] text-mute/80">
                     ★ {m.rating} · {m.price}
                   </span>
                 </span>
@@ -114,8 +114,8 @@ export default function MentorScreen({
         >
           Book a slot
         </button>
-        <button onClick={onBack} className="w-full text-center text-sm text-paper/50">
-          Back to your results
+        <button onClick={onBack} className="w-full text-center text-sm text-mute">
+          {backLabel}
         </button>
       </div>
     </div>

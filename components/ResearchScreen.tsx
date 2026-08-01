@@ -15,7 +15,7 @@ export default function ResearchScreen({
 
   return (
     <div className="screen-in flex flex-1 flex-col justify-center px-8">
-      <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-full text-accept ring-pulse">
+      <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-full text-deep ring-pulse">
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -45,10 +45,10 @@ export default function ResearchScreen({
               <span
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
                   state === "done"
-                    ? "bg-accept/15 text-accept"
+                    ? "bg-accept/15 text-deep"
                     : state === "active"
-                      ? "border border-accept/60 text-accept"
-                      : "border border-paper/15 text-transparent"
+                      ? "border border-accept/60 text-deep"
+                      : "border border-line text-transparent"
                 }`}
               >
                 {state === "done" ? (
@@ -62,10 +62,10 @@ export default function ResearchScreen({
               <span
                 className={`text-[15px] transition-colors duration-300 ${
                   state === "done"
-                    ? "text-paper/40"
+                    ? "text-mute/80"
                     : state === "active"
-                      ? "text-paper"
-                      : "text-paper/30"
+                      ? "text-ink"
+                      : "text-mute/50"
                 }`}
               >
                 {label}

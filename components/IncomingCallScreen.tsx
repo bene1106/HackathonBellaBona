@@ -1,0 +1,99 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { Job } from "../lib/types";
+
+export default function IncomingCallScreen({
+  job,
+  onAccept,
+  onDecline,
+}: {
+  job: Job;
+  onAccept: () => void;
+  onDecline: () => void;
+}) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = new Audio("/ringtone.mp3");
+    audio.loop = true;
+    audio.play().catch(() => {});
+    audioRef.current = audio;
+
+    let vibrating = true;
+    const vibrate = () => {
+      if (vibrating && "vibrate" in navigator) navigator.vibrate([400, 200, 400, 1000]);
+    };
+    vibrate();
+    const id = setInterval(vibrate, 2000);
+
+    return () => {
+      vibrating = false;
+      audio.pause();
+      clearInterval(id);
+      if ("vibrate" in navigator) navigator.vibrate(0);
+    };
+  }, []);
+
+  const stopRing = () => {
+    audioRef.current?.pause();
+    if ("vibrate" in navigator) navigator.vibrate(0);
+  };
+
+  return (
+    <div className="relative flex flex-1 flex-col items-center justify-between overflow-hidden pb-14 pt-20">
+      {/* blurred backdrop glow */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-1/4 h-72 w-72 -translate-x-1/2 rounded-full bg-accept/20 blur-[100px]" />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center">
+        <p className="text-sm text-paper/60">incoming call</p>
+        <h1 className="mt-3 px-6 text-center font-display text-4xl font-semibold">
+          {job.company} Recruiting
+        </h1>
+        <p className="mt-2 text-sm text-paper/50">mobile · Germany</p>
+      </div>
+
+      <div className="relative z-10 flex h-28 w-28 items-center justify-center rounded-full bg-paper/10 text-accept ring-pulse">
+        <span className="font-display text-4xl font-bold text-paper">
+          {job.company.slice(0, 1).toUpperCase()}
+        </span>
+      </div>
+
+      <div className="relative z-10 flex w-full items-center justify-around px-10">
+        <div className="flex flex-col items-center gap-2">
+          <button
+            onClick={() => {
+              stopRing();
+              onDecline();
+            }}
+            aria-label="Decline call"
+            className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-decline shadow-lg transition active:scale-95"
+          >
+            <svg viewBox="0 0 24 24" fill="white" className="h-8 w-8 rotate-[135deg]" aria-hidden>
+              <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.4 11.4 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .57 3.57 1 1 0 0 1-.25 1.02l-2.2 2.2Z" />
+            </svg>
+          </button>
+          <span className="text-xs text-paper/60">Decline</span>
+        </div>
+
+        <div className="flex flex-col items-center gap-2">
+          <button
+            onClick={() => {
+              stopRing();
+              onAccept();
+            }}
+            aria-label="Accept call"
+            className="flex h-[72px] w-[72px] animate-[gentle-bounce_1.2s_ease-in-out_infinite] items-center justify-center rounded-full bg-accept shadow-lg transition active:scale-95"
+          >
+            <svg viewBox="0 0 24 24" fill="white" className="h-8 w-8" aria-hidden>
+              <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.4 11.4 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .57 3.57 1 1 0 0 1-.25 1.02l-2.2 2.2Z" />
+            </svg>
+          </button>
+          <span className="text-xs text-paper/60">Accept</span>
+        </div>
+      </div>
+    </div>
+  );
+}

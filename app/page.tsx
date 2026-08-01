@@ -173,6 +173,7 @@ export default function Page() {
           onVideoRound={() => setScreen("video")}
           onNewJob={newJob}
           onMentor={() => setScreen("mentor")}
+          onRedoQuestion={redoOneQuestion}
         />
       )}
       {screen === "mentor" && <MentorScreen onBack={() => setScreen("feedback")} />}

@@ -4,6 +4,29 @@ import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { QRCodeSVG } from "qrcode.react";
 import { Job, TranscriptEntry, Feedback } from "../lib/types";
+import NotificationCard from "./NotificationCard";
+
+// Weakest = recruiter questions whose combined candidate answer was thinnest.
+function weakestQuestions(transcript: TranscriptEntry[]): string[] {
+  const pairs: { question: string; answerLength: number }[] = [];
+  let seenRecruiterTurns = 0;
+  for (let i = 0; i < transcript.length; i++) {
+    const t = transcript[i];
+    if (t.speaker !== "recruiter") continue;
+    seenRecruiterTurns++;
+    if (seenRecruiterTurns === 1 || !t.text.includes("?")) continue;
+    let answer = "";
+    for (let j = i + 1; j < transcript.length; j++) {
+      if (transcript[j].speaker === "recruiter") break;
+      answer += ` ${transcript[j].text}`;
+    }
+    pairs.push({ question: t.text.trim(), answerLength: answer.trim().length });
+  }
+  return pairs
+    .sort((a, b) => a.answerLength - b.answerLength)
+    .slice(0, 2)
+    .map((p) => p.question);
+}
 
 const PUBLIC_URL = process.env.NEXT_PUBLIC_PUBLIC_URL;
 
@@ -119,6 +142,7 @@ export default function FeedbackScreen({
   onVideoRound,
   onNewJob,
   onMentor,
+  onRedoQuestion,
 }: {
   job: Job;
   transcript: TranscriptEntry[];
@@ -129,6 +153,7 @@ export default function FeedbackScreen({
   onVideoRound: () => void;
   onNewJob: () => void;
   onMentor: () => void;
+  onRedoQuestion: (question: string) => void;
 }) {
   const [error, setError] = useState(false);
   const fetchedRef = useRef(false);
@@ -197,6 +222,7 @@ export default function FeedbackScreen({
     );
   }
 
+  const weakest = weakestQuestions(transcript);
   const verdictStyle =
     feedback.verdict === "READY"
       ? "bg-accept/15 text-accept border-accept/40"
@@ -255,6 +281,39 @@ export default function FeedbackScreen({
             ))}
           </ul>
         </section>
+
+        {weakest.length > 0 && (
+          <section>
+            <h2 className="px-1 font-display text-sm font-semibold uppercase tracking-wider text-paper/60">
+              Practice this again
+            </h2>
+            <div className="mt-3 space-y-2.5">
+              {weakest.map((q) => (
+                <NotificationCard
+                  key={q}
+                  onClick={() => onRedoQuestion(q)}
+                  avatar={
+                    <span className="flex h-full w-full items-center justify-center rounded-xl bg-paper/10 text-paper/70">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]" aria-hidden>
+                        <path d="M3 12a9 9 0 1 0 2.6-6.4L3 8" />
+                        <path d="M3 3v5h5" />
+                      </svg>
+                    </span>
+                  }
+                  title={q}
+                  body={
+                    <span>
+                      Your answer was thin here.
+                      <span className="mt-1 block text-sm font-semibold text-accept">
+                        Redo just this
+                      </span>
+                    </span>
+                  }
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <div className="mt-auto space-y-3 pt-8">

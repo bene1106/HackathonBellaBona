@@ -169,13 +169,13 @@ export default function FeedbackScreen({
         </p>
         <button
           onClick={onCallAgain}
-          className="w-full rounded-2xl bg-accept py-4 font-display text-lg font-semibold text-ink"
+          className="w-full rounded-full bg-accept py-4 font-display text-lg font-semibold text-ink"
         >
           Call me again
         </button>
         <button
           onClick={onVideoRound}
-          className="w-full rounded-2xl border border-accept/40 py-3.5 font-display text-base text-accept"
+          className="w-full rounded-full border border-accept/40 py-3.5 font-display text-base text-accept"
         >
           Round 2: Video interview
         </button>
@@ -222,11 +222,11 @@ export default function FeedbackScreen({
       </div>
 
       <div className="mt-8 space-y-4">
-        <div className="rounded-2xl bg-paper/5 p-4">
+        <div className="rounded-[20px] bg-paper/5 p-4">
           <CategoryBars feedback={feedback} />
         </div>
 
-        <section className="rounded-2xl bg-paper/5 p-4">
+        <section className="rounded-[20px] bg-paper/5 p-4">
           <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-accept">
             What worked
           </h2>
@@ -240,7 +240,7 @@ export default function FeedbackScreen({
           </ul>
         </section>
 
-        <section className="rounded-2xl bg-paper/5 p-4">
+        <section className="rounded-[20px] bg-paper/5 p-4">
           <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-paper/60">
             Fix before the next call
           </h2>
@@ -258,19 +258,19 @@ export default function FeedbackScreen({
       <div className="mt-auto space-y-3 pt-8">
         <button
           onClick={onCallAgain}
-          className="w-full rounded-2xl bg-accept py-4 font-display text-lg font-semibold text-ink transition active:scale-[0.98]"
+          className="w-full rounded-full bg-accept py-4 font-display text-lg font-semibold text-ink transition active:scale-[0.98]"
         >
           Call me again
         </button>
         <button
           onClick={onVideoRound}
-          className="w-full rounded-2xl border border-accept/40 py-3.5 font-display text-base text-accept transition active:scale-[0.98]"
+          className="w-full rounded-full border border-accept/40 py-3.5 font-display text-base text-accept transition active:scale-[0.98]"
         >
           Round 2: Video interview
         </button>
         <button
           onClick={onNewJob}
-          className="w-full rounded-2xl border border-paper/20 py-3.5 font-display text-base text-paper/80 transition active:scale-[0.98]"
+          className="w-full rounded-full border border-paper/20 py-3.5 font-display text-base text-paper/80 transition active:scale-[0.98]"
         >
           New job
         </button>

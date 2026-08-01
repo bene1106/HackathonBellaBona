@@ -49,12 +49,14 @@ export default function IncomingCallScreen({
       </div>
 
       <div className="relative z-10 flex flex-col items-center">
-        <p className="text-[13px] font-medium tracking-wide text-paper/55">incoming call</p>
+        <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-paper/55">
+          incoming call
+        </p>
         <h1 className="mt-2 px-6 text-center font-display text-[2.6rem] font-semibold leading-tight">
           {job.company}
           <span className="block text-[1.6rem] font-medium text-paper/80">Recruiting</span>
         </h1>
-        <p className="mt-2 text-sm text-paper/45">mobile · Germany</p>
+        <p className="mt-2 font-mono text-[13px] text-paper/45">mobile · Germany</p>
       </div>
 
       <div className="relative z-10 mt-auto flex h-32 w-32 items-center justify-center rounded-full border border-paper/10 bg-paper/10 shadow-[0_0_60px_rgba(47,214,114,0.15)]">

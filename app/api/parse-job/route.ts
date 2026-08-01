@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import { FALLBACK_JOB } from "../../../lib/fallbackJob";
+import { FALLBACK_JOB, FALLBACK_PITCH } from "../../../lib/fallbackJob";
+
+const JOB_EXTRACT_PROMPT =
+  'Extract the job posting into JSON with exactly these keys: company (string), role (string), seniority (string), top5Requirements (array of 5 short strings, most important first), cultureHints (one short string). Infer missing details sensibly from context (product names, domain, tone). NEVER output placeholder values like "Unknown", "Not specified", or "N/A" — if the company is truly unnamed, use null for that field. If the text is not a job posting at all, return {"notAJob": true}. Return ONLY JSON.';
+
+const PITCH_EXTRACT_PROMPT =
+  'Extract the startup description or pitch deck text into JSON with exactly these keys: company (the startup name), role (one short line describing the product), seniority (the funding stage, e.g. "Pre-seed", "Seed", "Series A"; infer from context if unstated), top5Requirements (array of 5 short topics a VC partner would probe hardest on THIS startup, most critical first), cultureHints (one short industry label like "foodtech" or "fintech"). Infer missing details sensibly. NEVER output placeholder values like "Unknown", "Not specified", or "N/A" — if the startup is truly unnamed, use null for that field. If the text is not about a startup at all, return {"notAJob": true}. Return ONLY JSON.';
 
 export const maxDuration = 30;
 
@@ -19,8 +25,10 @@ function stripHtml(html: string): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { input } = (await req.json()) as { input: string };
-    if (!input?.trim()) return NextResponse.json(FALLBACK_JOB);
+    const { input, mode } = (await req.json()) as { input: string; mode?: string };
+    const pitch = mode === "pitch";
+    const fallback = pitch ? FALLBACK_PITCH : FALLBACK_JOB;
+    if (!input?.trim()) return NextResponse.json(fallback);
 
     let text = input.trim();
     if (/^https?:\/\//i.test(text)) {
@@ -34,10 +42,10 @@ export async function POST(req: NextRequest) {
         });
         const html = await res.text();
         const stripped = stripHtml(html);
-        if (stripped.length < 200) return NextResponse.json(FALLBACK_JOB);
+        if (stripped.length < 200) return NextResponse.json(fallback);
         text = stripped;
       } catch {
-        return NextResponse.json(FALLBACK_JOB);
+        return NextResponse.json(fallback);
       }
     }
 
@@ -48,8 +56,7 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content:
-            'Extract the job posting into JSON with exactly these keys: company (string), role (string), seniority (string), top5Requirements (array of 5 short strings, most important first), cultureHints (one short string). Infer missing details sensibly from context (product names, domain, tone). NEVER output placeholder values like "Unknown", "Not specified", or "N/A" — if the company is truly unnamed, use null for that field. If the text is not a job posting at all, return {"notAJob": true}. Return ONLY JSON.',
+          content: pitch ? PITCH_EXTRACT_PROMPT : JOB_EXTRACT_PROMPT,
         },
         { role: "user", content: text.slice(0, 12000) },
       ],
@@ -65,12 +72,12 @@ export async function POST(req: NextRequest) {
       .slice(0, 5);
 
     if (parsed.notAJob || isPlaceholder(parsed.role) || requirements.length < 2) {
-      return NextResponse.json(FALLBACK_JOB);
+      return NextResponse.json(fallback);
     }
     return NextResponse.json({
       company: isPlaceholder(parsed.company) ? "Confidential" : String(parsed.company),
       role: String(parsed.role),
-      seniority: isPlaceholder(parsed.seniority) ? "Mid-level" : String(parsed.seniority),
+      seniority: isPlaceholder(parsed.seniority) ? (pitch ? "Pre-seed" : "Mid-level") : String(parsed.seniority),
       top5Requirements: requirements,
       cultureHints: isPlaceholder(parsed.cultureHints) ? "" : String(parsed.cultureHints),
     });

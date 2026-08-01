@@ -6,11 +6,13 @@ export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   try {
-    const { job, transcript, cv } = (await req.json()) as {
+    const { job, transcript, cv, mode } = (await req.json()) as {
       job: Job;
       transcript: TranscriptEntry[];
       cv?: string;
+      mode?: string;
     };
+    const pitch = mode === "pitch";
 
     if (!transcript?.length || !transcript.some((t) => t.speaker === "candidate")) {
       return NextResponse.json({ error: "transcript too short" }, { status: 422 });
@@ -27,14 +29,19 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content:
-            "You are a tough but fair interview coach. Given this job spec and interview transcript, return ONLY JSON: score (0-100, be honest, average first attempts land 45-65), verdict ('NOT READY'|'ALMOST'|'READY', READY only at 80+), categories (object with clarity, structure, confidence, accuracy — each 0-100; accuracy measures how specific and credible their claims were" +
-            (cv ? ", checked against their CV" : "") +
-            "), strengths (array of 3 short bullets referencing what they actually said), improvements (array of 3 specific, actionable fixes with a better example phrasing), oneLineSummary (string).",
+          content: pitch
+            ? "You are a tough but fair pitch coach. Given this startup summary and a transcript of a first VC call, return ONLY JSON: score (0-100, be honest, average first pitches land 45-65), verdict ('NOT READY'|'ALMOST'|'READY', READY only at 80+), categories (object with keys clarity, structure, confidence, accuracy — each 0-100, where clarity scores how clearly the founder explained the problem and product, structure scores TRACTION: evidence, numbers and validation behind claims" +
+              (cv ? " checked against their pitch script" : "") +
+              ", confidence scores MARKET: how well they understand the market size, wedge and competition, and accuracy scores CONVICTION: how convincingly they argued why this team wins), strengths (array of 3 short bullets referencing what the founder actually said), improvements (array of 3 specific, actionable fixes with a better example phrasing a founder could use), oneLineSummary (string)."
+            : "You are a tough but fair interview coach. Given this job spec and interview transcript, return ONLY JSON: score (0-100, be honest, average first attempts land 45-65), verdict ('NOT READY'|'ALMOST'|'READY', READY only at 80+), categories (object with clarity, structure, confidence, accuracy — each 0-100; accuracy measures how specific and credible their claims were" +
+              (cv ? ", checked against their CV" : "") +
+              "), strengths (array of 3 short bullets referencing what they actually said), improvements (array of 3 specific, actionable fixes with a better example phrasing), oneLineSummary (string).",
         },
         {
           role: "user",
-          content: `JOB SPEC:\n${JSON.stringify(job)}\n${cv ? `\nCANDIDATE CV:\n${cv.slice(0, 2000)}\n` : ""}\nTRANSCRIPT:\n${transcriptText}`,
+          content: pitch
+            ? `STARTUP:\n${JSON.stringify(job)}\n${cv ? `\nPITCH SCRIPT:\n${cv.slice(0, 2000)}\n` : ""}\nCALL TRANSCRIPT (Recruiter = the VC partner):\n${transcriptText}`
+            : `JOB SPEC:\n${JSON.stringify(job)}\n${cv ? `\nCANDIDATE CV:\n${cv.slice(0, 2000)}\n` : ""}\nTRANSCRIPT:\n${transcriptText}`,
         },
       ],
     });

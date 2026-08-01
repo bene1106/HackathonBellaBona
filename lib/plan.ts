@@ -1,5 +1,48 @@
-import { Job, InterviewPlan, PlannedQuestion } from "./types";
+import { Job, InterviewPlan, PlannedQuestion, Mode } from "./types";
 import { DURATION_PACING, DurationMinutes } from "./prompts";
+
+const PITCH_QUESTIONS = (company: string): PlannedQuestion[] => [
+  {
+    question: `Give me the two minute version: what is ${company} and why now`,
+    why: "Every VC call opens with the compressed story",
+  },
+  {
+    question: "Who has this problem and how painful is it really",
+    why: "Tests whether the pain is real or invented",
+  },
+  {
+    question: "What do people do today and why is your wedge better",
+    why: "Probes the wedge versus existing solutions",
+  },
+  {
+    question: "What traction or validation do you have so far",
+    why: "Claims need numbers behind them",
+  },
+  {
+    question: "Why is this team the one that wins this market",
+    why: "The hard question every partner asks",
+  },
+  {
+    question: "How do you make money and what are the unit economics",
+    why: "Checks if the business works per unit",
+  },
+  {
+    question: "How big can this get if it works",
+    why: "Fund math needs a large outcome",
+  },
+  {
+    question: "What have you learned from users that surprised you",
+    why: "Separates builders from pitch readers",
+  },
+  {
+    question: "What are the biggest risks in the next six months",
+    why: "Tests honesty and self-awareness",
+  },
+  {
+    question: "How much are you raising and what does it buy",
+    why: "The closing question on every first call",
+  },
+];
 
 const GENERIC_QUESTIONS: PlannedQuestion[] = [
   {
@@ -39,9 +82,22 @@ const GENERIC_QUESTIONS: PlannedQuestion[] = [
 export function buildFallbackPlan(
   job: Job,
   duration: DurationMinutes,
-  surprise: boolean
+  surprise: boolean,
+  mode: Mode = "job"
 ): InterviewPlan {
   const count = DURATION_PACING[duration].questions;
+  if (mode === "pitch") {
+    return {
+      focusAreas: job.top5Requirements.slice(0, 3),
+      plannedQuestions: PITCH_QUESTIONS(job.company).slice(0, count),
+      curveballTopic: surprise ? "what kills this company" : undefined,
+      whatGoodLooksLike: [
+        "Numbers behind every traction claim",
+        "A problem story a stranger could repeat",
+        "A sharp answer to why this team wins",
+      ],
+    };
+  }
   const reqQuestions: PlannedQuestion[] = job.top5Requirements.map((r) => ({
     question: `Tell me about a time you showed ${r.toLowerCase()}`,
     why: `${r} is a core requirement in the posting`,

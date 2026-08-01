@@ -1,3 +1,8 @@
+export type Mode = "job" | "pitch";
+
+// In pitch mode the same shape carries: company = startup name,
+// role = product one-liner, seniority = stage, top5Requirements =
+// topics a VC would probe, cultureHints = industry.
 export type Job = {
   company: string;
   role: string;

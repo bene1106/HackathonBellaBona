@@ -14,6 +14,7 @@ import LiveCallScreen from "../components/LiveCallScreen";
 import FeedbackScreen from "../components/FeedbackScreen";
 import VideoCallScreen from "../components/VideoCallScreen";
 import MentorScreen from "../components/MentorScreen";
+import NotifyScreen from "../components/NotifyScreen";
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -143,10 +144,18 @@ export default function Page() {
           plan={plan}
           level={setup.level}
           duration={setup.duration}
-          onStart={() => setScreen("incoming")}
+          onStart={() =>
+            setScreen(
+              typeof Notification !== "undefined" &&
+                Notification.permission === "default"
+                ? "notify"
+                : "incoming"
+            )
+          }
           onAdjust={() => setScreen("home")}
         />
       )}
+      {screen === "notify" && <NotifyScreen onDone={() => setScreen("incoming")} />}
       {screen === "incoming" && (
         <IncomingCallScreen
           job={job}

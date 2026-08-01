@@ -44,6 +44,7 @@ export type Screen =
   | "home"
   | "prep"
   | "plan"
+  | "notify"
   | "incoming"
   | "live"
   | "feedback"

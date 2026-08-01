@@ -19,6 +19,7 @@ export default function Page() {
   const startPrep = useCallback(async (input: string) => {
     setScreen("prep");
     setDifficulty(1);
+    const minPrep = new Promise((r) => setTimeout(r, 3500));
     try {
       const res = await fetch("/api/parse-job", {
         method: "POST",
@@ -31,6 +32,7 @@ export default function Page() {
     } catch {
       setJob(FALLBACK_JOB);
     }
+    await minPrep;
     setScreen("incoming");
   }, []);
 

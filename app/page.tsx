@@ -13,6 +13,7 @@ import IncomingCallScreen from "../components/IncomingCallScreen";
 import LiveCallScreen from "../components/LiveCallScreen";
 import FeedbackScreen from "../components/FeedbackScreen";
 import VideoCallScreen from "../components/VideoCallScreen";
+import MentorScreen from "../components/MentorScreen";
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -171,8 +172,10 @@ export default function Page() {
           onCallAgain={callAgain}
           onVideoRound={() => setScreen("video")}
           onNewJob={newJob}
+          onMentor={() => setScreen("mentor")}
         />
       )}
+      {screen === "mentor" && <MentorScreen onBack={() => setScreen("feedback")} />}
       {screen === "video" && (
         <VideoCallScreen
           job={job}

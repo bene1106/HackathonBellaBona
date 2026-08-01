@@ -118,6 +118,7 @@ export default function FeedbackScreen({
   onCallAgain,
   onVideoRound,
   onNewJob,
+  onMentor,
 }: {
   job: Job;
   transcript: TranscriptEntry[];
@@ -127,6 +128,7 @@ export default function FeedbackScreen({
   onCallAgain: () => void;
   onVideoRound: () => void;
   onNewJob: () => void;
+  onMentor: () => void;
 }) {
   const [error, setError] = useState(false);
   const fetchedRef = useRef(false);
@@ -256,6 +258,22 @@ export default function FeedbackScreen({
       </div>
 
       <div className="mt-auto space-y-3 pt-8">
+        {feedback.verdict === "READY" && (
+          <button
+            onClick={onMentor}
+            className="w-full rounded-[20px] border border-accept/40 bg-accept/[0.07] p-4 text-left transition active:scale-[0.98]"
+          >
+            <span className="block font-display text-base font-semibold text-paper">
+              Ready is just the start.
+            </span>
+            <span className="mt-1 block text-sm text-paper/60">
+              Talk to someone who got this exact job.
+            </span>
+            <span className="mt-2 block text-sm font-semibold text-accept">
+              Meet your mentor
+            </span>
+          </button>
+        )}
         <button
           onClick={onCallAgain}
           className="w-full rounded-full bg-accept py-4 font-display text-lg font-semibold text-ink transition active:scale-[0.98]"
@@ -274,6 +292,14 @@ export default function FeedbackScreen({
         >
           New job
         </button>
+        {feedback.verdict !== "READY" && (
+          <button
+            onClick={onMentor}
+            className="w-full text-center text-sm text-paper/50"
+          >
+            Talk to someone who got this job
+          </button>
+        )}
         <ShareQR />
       </div>
     </div>

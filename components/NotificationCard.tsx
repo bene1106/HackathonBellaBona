@@ -28,7 +28,7 @@ export default function NotificationCard({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
-          <p className="truncate text-[15px] font-semibold leading-snug text-paper">
+          <p className="text-[15px] font-semibold leading-snug text-paper">
             {title}
           </p>
           {meta && (
